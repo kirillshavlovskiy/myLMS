@@ -1,0 +1,39 @@
+[
+    {
+        "number": 1,
+        "title": "Basics",
+        "lessons": [
+            {
+                "number": 1,
+                "title": "Python Syntax and Semantics",
+                "tasks": [
+                    {
+                        "task_name": "Task 1: Variables and Data Types",
+                        "description": "Define variables, perform basic operations, understand data types.",
+                        "correct_code": "num = 10\nprint(num)"
+                    },
+                    {
+                        "task_name": "Task 2: Control Structures",
+                        "description": "Conditional statements and loops.",
+                        "correct_code": "num = -5\nif num > 0:\n    print('Positive')\nelse:\n    print('Not positive')"
+                    },
+                    {
+                        "task_name": "Task 3: Functions",
+                        "description": "Function definition, parameters, and scope.",
+                        "correct_code": "def square(num):\n    return num ** 2\nresult = square(5)\nprint(result)"
+                    },
+                    {
+                        "task_name": "Task 4: Data Structures",
+                        "description": "Lists, tuples, sets, dictionaries.",
+                        "correct_code": "fruits = ['apple', 'banana', 'cherry']\nprint(fruits[2])"
+                    },
+                    {
+                        "task_name": "Task 5: String Manipulation",
+                        "description": "Basic string methods and formatting.",
+                        "correct_code": "str1 = 'Hello'\nstr2 = 'World'\nresult = str1 + ' ' + str2\nprint(result)"
+                    }
+                ]
+            }
+        ]
+    }
+]
