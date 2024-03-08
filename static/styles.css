@@ -1,0 +1,28 @@
+<style>
+/* Define CSS classes for the button */
+.input-button {
+    display: inline-block;
+    padding: 0.5em 1em;
+    border: none;
+    border-radius: 0.25em;
+    background-color: var(--input-bg-color);
+    color: var(--input-color);
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* Define CSS variables for the Ayu Mirage theme */
+:root {
+    --input-bg-color: #1E2132;
+    --input-color: #A6ACCD;
+}
+
+/* Apply the CSS classes to your button */
+.button-class {
+    /* Add any additional styles for the button */
+}
+
+</style>
+
+<!-- Use the button with the defined CSS class -->
+<button class="input-button button-class">Submit</button>
