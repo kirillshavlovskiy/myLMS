@@ -14,7 +14,8 @@ from openai import OpenAI
 from .forms import ContentForm, CodeForm
 from django.shortcuts import get_object_or_404, redirect, render
 from .models import Course, Module, Lesson, Task, Task_thread
-from .openai_service import generate_lesson_content, generate_project_content, assistant_thread_run, message_loop, assistant_start_preprocess
+from .openai_service import generate_lesson_content, generate_project_content, assistant_thread_run, message_loop, \
+    assistant_preprocess_task
 
 client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY", "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"))
 
@@ -97,7 +98,7 @@ def lesson_process_code(request, lesson_id):
             symbols_processed = str(request.POST.get('symbols_processed', ''))
             try:
                 output, complete, prompt_line_n, message = execute_python_code(code, input_values)
-                print("output: ", output, "complete", complete, "prompt", prompt_line_n, 'message',message)
+                print("output: ", output, "complete", complete, "prompt", prompt_line_n, 'message', message)
                 # Truncate output based on the pattern match
                 output_clean: str = output[
                                     len(symbols_processed):]  # Truncate the output based on symbol processed length
@@ -132,37 +133,51 @@ def lesson_process_code(request, lesson_id):
     })
 
 
-def chat_code(request):
+def start_thread(request):
     try:
+        print('start_thread:')
         if request.method == 'POST':
             task_id = request.POST.get('task_id')
+            code = request.POST.get('code')
             print(task_id)
             task = get_object_or_404(Task, id=task_id)
-            task_thread = get_object_or_404(Task_thread, task_id=task_id)
+            assistant_id = 'asst_Kx2zKp0x0r3fLA6ZFiIGVsPZ'
+            print(code)
+            thread = client.beta.threads.create()
+            thread_id = thread.id
+            prompt_1 = 'There is a task: ' + str(task.description)
+            prompt_2 = '\nFor following code please provide detailed explanation on how we should approach same task completion:\n' + str(
+                code)
+            message = f"{prompt_1} {prompt_2} "
+            task_thread = Task_thread.objects.create(thread_id=thread_id,
+                                                     assistant_id=assistant_id,
+                                                     task=task)
+            task_thread.save()
+            print(task_thread)
+            AI_response = message_loop(message, assistant_id, thread_id)
+            print("AI_response: ", AI_response)
+            return JsonResponse(
+                {'ai_response': AI_response, 'thread_id': thread_id, 'task_description': task.description})
+        else:
+            # Handle the case when the form is not valid
+            print("Form is not valid")
+            return JsonResponse({'error': 'Form is not valid'})
+    except Exception as e:
+        # Handle any exception that occurred
+
+        print('error', str(e))
+        return JsonResponse({'error:': str(e)})
+
+
+def chat(request):
+    try:
+        if request.method == 'POST':
             message = request.POST.get('input_message')
             thread_id = request.POST.get('thread_id')
-            code = request.POST.get('code')
-            assistant_id = 'asst_Kx2zKp0x0r3fLA6ZFiIGVsPZ'
             if not thread_id:
                 thread = client.beta.threads.create()
                 thread_id = thread.id
-            if not message:
-                print('check if prompt prepared')
-                prompt_1 = 'there is a task: ' + str(task.description)
-                prompt_2 = '\nFor following code please provide detailed explanation on how we should approach same task completion:\n' + str(code)
-                message = f"{prompt_1} {prompt_2} "
-            if not task_thread:
-                task_thread = Task_thread.objects.create(thread_id=thread_id,
-                                                         assistant_id=assistant_id,
-                                                         task=task)
-                task_thread.save()
-                task_thread.prompts.append(message)
-                print(task_thread.prompts)
-                task_thread.save()
-            else:
-                print(task_thread)
-                #task_thread.prompts.append(message)
-                #task_thread.save()
+            assistant_id = 'asst_Kx2zKp0x0r3fLA6ZFiIGVsPZ'
             AI_response = message_loop(message, assistant_id, thread_id)
             print("AI_response: ", AI_response)
             return JsonResponse({'ai_response': AI_response, 'thread_id': thread_id})
@@ -170,46 +185,54 @@ def chat_code(request):
             # Handle the case when the form is not valid
             print("Form is not valid")
             return JsonResponse({'error': 'Form is not valid'})
+
     except Exception as e:
         # Handle any exception that occurred
         print('error', str(e))
         return JsonResponse({'error': str(e)})
 
 
-def code_process(request):
+def code_process_ai(request):
     try:
-
         if request.method == 'POST':
-            print('check')
+            print('code_process:')
             code = request.POST.get('code')
             output = request.POST.get('output')
             thread_id = request.POST.get('thread_id')
-            task_id = request.POST.get('task_id')
+            task_id = request.POST.get('current_task')
+            print(task_id)
             task = get_object_or_404(Task, id=task_id)
             print('task id found: ', task_id)
             if thread_id is None:
                 thread = client.beta.threads.create()
                 thread_id = thread.id
             if task_id:
-                assistant_id = 'asst_Kx2zKp0x0r3fLA6ZFiIGVsPZ'
-
-                result = assistant_start_preprocess(code, task.description, thread_id)
-
-                return JsonResponse({'ai_response': ai_response, 'thread_id': thread_id, 'assistant_id': assistant_id, 'task_description': task.description})
-            else:
-                result = assistant_thread_run(code, output, thread_id)
+                result = assistant_preprocess_task(code, output, thread_id, task.description)
                 if result is not None and len(result) == 3:
                     ai_response, assistant_id, thread_id = result
-
-                    return JsonResponse({'ai_response': ai_response, 'thread_id': thread_id, 'assistant_id': assistant_id})
+                    assistant_id = 'asst_Kx2zKp0x0r3fLA6ZFiIGVsPZ'
+                    return JsonResponse(
+                        {'ai_response': ai_response, 'thread_id': thread_id, 'assistant_id': assistant_id,
+                         'task_description': task.description})
                 else:
                     # Handle the case when the result does not contain the expected values
                     print("Error: Incorrect number of values returned from assistant_thread_run")
                     return JsonResponse({'error': 'Incorrect number of values returned'})
-
+            else:
+                result = assistant_thread_run(code, output, thread_id)
+                if result is not None and len(result) == 3:
+                    ai_response, assistant_id, thread_id = result
+                    assistant_id = 'asst_Kx2zKp0x0r3fLA6ZFiIGVsPZ'
+                    return JsonResponse(
+                        {'ai_response': ai_response, 'thread_id': thread_id, 'assistant_id': assistant_id})
+                else:
+                    # Handle the case when the result does not contain the expected values
+                    print("Error: Incorrect number of values returned from assistant_thread_run")
+                    return JsonResponse({'error': 'Incorrect number of values returned'})
         return JsonResponse({'error': 'Form is not valid'})
     except Exception as e:
         # Handle any exception that occurred
+        print('error', str(e))
         return JsonResponse({'error': str(e)})
 
 

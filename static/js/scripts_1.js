@@ -1,150 +1,6 @@
-{% extends 'courses/base.html' %}
-{% load static %}
-<link rel="stylesheet" type="text/css" href="{% static 'styles.css' %}">
-{% block title %}Reprocess Content{% endblock %}
-
-{% block content %}
-<h1>{{ lesson.title }}</h1>
-
-{% for task in lesson.task_set.all %}
-<div>
-    <h3>{{ task.name }}</h3>
-    <h4>{{ task.description }}</h4>
-
-        <textarea id="task-{{ task.id }}" placeholder="Output will appear here">{{ task.correct_code }}</textarea>
-         <button onclick="handleExecutionClick('{{ task.id }}')">Send for execution</button>
-    <script>
-    const taskBlock{{ task.id }} = CodeMirror.fromTextArea(document.getElementById('task-' + {{ task.id }}), {
-        lineNumbers: false,
-        mode: 'python',
-        theme: 'ayu-mirage',
-        readOnly: true
-    });
-
-    const taskElement{{ task.id }} = taskBlock{{ task.id }}.getWrapperElement();
-    taskElement{{ task.id }}.classList.add('customClass');
-</script>
-</div>
-{% endfor %}
-
-<div class="container">
-    <div class="form-container">
-        <div class="form-wrapper-left">
-            <h2>Practice section:</h2>
-            <form id="code-form">
-                {% csrf_token %}
-                <textarea name="code" id="code" placeholder="Your code here"></textarea>
-                <p><button class = input-button type="submit">Run Code</button></p>
-            </form>
-            <div class="output-container">
-                <textarea id="code_output" placeholder="Output will appear here"></textarea>
-
-            </div>
-        </div>
-        <div class="form-wrapper-right">
-            <div id="preview"></div>
-            <form id="code-form-ai" novalidate>
-                <h2>AI CoPilot:</h2>
-                {% csrf_token %}
-                <textarea id="ai-output" name="ai-output" style="height: 80%;" placeholder="AI output will appear here"></textarea>
-
-            </form>
-            <form id="code-input-ai" novalidate>
-                <p><button class=input-button type="submit">Send Message</button></p>
-                {% csrf_token %}
-                <textarea id="ai-input" name="ai-output" style="height: 20%;" placeholder="AI output will appear here"></textarea>
-
-            </form>
-        </div>
-    </div>
-</div>
-<div>
-<h3>Notebook</h3>
-
-    <textarea id="myTextarea"></textarea>
-<script>
-    tinymce.init({
-        selector: 'textarea',
-        plugins: 'autolink lists link image',
-        toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright | bullist numlist outdent indent | link image'
-    });
-</script>
-    </div>
-<div id="root"></div>
-   <style>
-    .highlighted-line {
-        background-color: rgb(215, 212, 240); /* Set the background color to blue using RGB values */
-        font-weight: bold; /* Set the text to bold */
-    }
-    .highlighted-line-finish {
-        background-color: rgb(217, 217, 217); /* Set the background color to blue using RGB values */
-        font-weight: bold; /* Set the text to bold */
-    }
-    .error-highlighted-line {
-        background-color: rgb(236, 165, 158); /* Set the background color to blue using RGB values */
-        font-weight: bold; /* Set the text to bold */
-    }
-    .CodeMirror {
-    border: 1px solid #808080; /* Add a 1px solid border with color #ccc */
-    border-radius: 5px; /* Add a border radius of 5px */
-    padding: 5px; /* Add some padding inside the CodeMirror */
-}
-</style>
-   <style>
-.container {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start; /* Align items at the top */
-}
-
-.form-container {
-    display: flex; /* Use flexbox to position forms side by side */
-    width: 98%; /* Set the width of the form container */
-    margin-bottom: 5%; /* Add margin to the top of the form wrapper */
-}
-
-.form-wrapper-left {
-    display: flex;
-    flex-direction: column;
-    width: 50%; /* Right form takes up 50% of the container width */
-    margin-left: 20px; /* Set distance between forms */
-}
-
-.form-wrapper-right {
-    display: flex;
-    flex-direction: column;
-    width: 50%; /* Right form takes up 50% of the container width */
-    margin-left: 20px; /* Set distance between forms */
-
-}
 
 
-.output-container {
-    width: 100%; /* Set the width of the output container */
-}
 
-#code_output {
-    width: 100%; /* Ensure the output textarea takes up 100% width */
-    height: 200px; /* Set the height of the output textarea to 200 pixels */
-}
-
-.customClass {
-    background-color: rgb(247, 247, 247);
-
-
-}
-
-</style>
-
-<!-- Import React and any necessary libraries -->
-<script src="https://unpkg.com/react@17/umd/react.development.js"></script>
-<script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
-<!-- Define React components -->
-<!-- Mount React components -->
-<script src="{% static 'js/react-app.js' %}"></script>
-<!-- Mount React component to root element -->
-<!-- Define your TextEditor component -->
-<script>
     let editor;
     let editor_AI;
     let input_AI;
@@ -152,56 +8,9 @@
     let previousLine;
     let formData = new FormData();
     let AI_formData = new FormData();
-    let current_task;
-
-        function handleExecutionClick(taskId, event) {
-                if (event) {
-                    event.preventDefault(); // Prevent form submission
-                }
-                const taskTextarea = document.getElementById('task-' + taskId);
-                const code_example = taskTextarea.value
-                editor.setValue(code_example);
-                const taskData = new FormData();
-                taskData.append('task_id', taskId);
-                output_form.setValue('')
-
-                fetch('{% url 'start_thread' %}', {
-                    method: 'POST',
-                    body: taskData,
-                    headers: {
-                        'X-CSRFToken': 'ZUP3t44Y65LUc73Xf9Ttev8TnyHF3QzKk4gmydjMKbletcifqGx3RUGNzQoH5WeK'
-                    }
-                })
-            .then(response => {
-                    Prism.highlightAll();
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                    .then(data => {
-                        if (data.thread_id) {
-
-                            AI_formData = new FormData();
-                            AI_formData.append('thread_id', data.thread_id);
-                            AI_formData.append('assistant_id', data.assistant_id);
-                            AI_formData.append('code', code_example);
-                            AI_formData.append('output', '');
-                            current_task = taskId;
-                            AI_formData.append('current_task', current_task);
-                            // Assuming 'editor_AI' is another instance of CodeMirror
-                            editor_AI.setValue('###__Task:__ ' + data.task_description +'\n\n###__Coding Assistant (auto):__ Hello, my name is Mr.Code.\n\nI am your teaching assistant today! Nice to meet you and lets start our practice.\n\nI gave you some code examples to start practicing. ' + data.ai_response + '\n\nNow you can check the result of sample code execution after pressing the Submit button. \n\nYou can ask me further any questions should you have them about the lesson topic: {{ lesson.title }}');
-                            // Add the event listener to capture output form changes
-
-                        }
-
-                    });
-
-            }
 
 
-
-document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function () {
         const form = document.getElementById('code-form');
         const form_ai = document.getElementById('code-form-ai');
         const form_input_ai = document.getElementById('code-input-ai');
@@ -209,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function () {
         output_form = CodeMirror.fromTextArea(document.getElementById('code_output'), {
             lineNumbers: false,
             mode: 'text',
-            theme: 'ayu-mirage',
+            theme: 'tomorrow-night-eighties',
             readonly: true,
 
         });
@@ -218,7 +27,7 @@ document.addEventListener('DOMContentLoaded', function () {
         editor = CodeMirror.fromTextArea(form.querySelector('textarea'), {
             lineNumbers: true,
             mode: 'python',
-            theme: 'ayu-mirage',
+            theme: 'tomorrow-night-eighties',
             gutters: ['CodeMirror-lint-markers'],
             lint: true,
             spellcheck:true
@@ -226,25 +35,23 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
-        editor_AI = CodeMirror.fromTextArea(form_ai.querySelector('textarea'), {
+         editor_AI = CodeMirror.fromTextArea(form_ai.querySelector('textarea'), {
               mode: "markdown",
-              theme: "ayu-mirage",
+              theme: "tomorrow-night-eighties",
               lineNumbers: false,
               lineWrapping: true
 
             });
 
-        input_AI = CodeMirror.fromTextArea(form_input_ai.querySelector('textarea'), {
+         input_AI = CodeMirror.fromTextArea(form_input_ai.querySelector('textarea'), {
                     lineNumbers: false,
                     mode: 'text',
                     theme: 'tomorrow-night-eighties',
         });
 
-
-        editor.setSize(null, "500px"); // Set the height to 400px
+        editor.setSize(null, "720px"); // Set the height to 400px
         editor_AI.setSize(null, "500px"); // Set the height to 400px
         input_AI.setSize(null, "200px"); // Set the height to 400px
-        output_form.setSize(null, "200px"); // Set the height to 400px
 
         const editorElement = editor.getWrapperElement();
         const AI_editorElement = editor_AI.getWrapperElement();
@@ -254,19 +61,19 @@ document.addEventListener('DOMContentLoaded', function () {
         editor_AI.setOption('readOnly', true);
 
         form_input_ai.addEventListener('submit', handleAIFormSubmission)
-
         // Define the event listener for form submission
         form.addEventListener('submit', handleFormSubmission);
 
         // Define the event listener for output_form content changes
         function handleOutputFormChange(instance, changeObj) {
-                handleResponseAI(instance.getValue());
-                }
+            handleResponseAI(instance.getValue());
+        }
 
         // Define the event listener for output_form content changes
         editor.on('change', function(instance, changeObj) {
-        cleanHighlight(instance.getValue());
+            cleanHighlight(instance.getValue());
         });
+
 
         // Display the contents of the FormData object
         function logFormData(formData) {
@@ -274,6 +81,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 console.log(pair[0] + ': ' + pair[1]);
             }
         }
+
 
         // Function to clear all highlights from editor
         function cleanHighlight() {
@@ -296,70 +104,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
         AI_formData.set('output', output);
         AI_formData.set('code', code);
-
         form_input_ai.dataset.code = code
         form_input_ai.dataset.output = output
 
-        logFormData(AI_formData);
-        fetch('{% url 'process_code'  %}', {
-            method: 'POST',
-            body: AI_formData,
-            headers: {
-                'X-CSRFToken': 'ZUP3t44Y65LUc73Xf9Ttev8TnyHF3QzKk4gmydjMKbletcifqGx3RUGNzQoH5WeK'
-            }
-        })
-    .then(response => {
 
-            editorElement.classList.remove('customClass');
-            editor.setOption('readOnly', false);
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-            .then(data => {
-                if (data.ai_response) {
-
-                    if (!editor_AI.getValue()) {
-
-
-                        // Call the function to log the contents of formData
-                        logFormData(AI_formData);
-                        // Set the content and mark specific lines as editable
-                        editor_AI.setValue("Coding Assistant (auto): " + data.ai_response);
-                    } else {
-                        // Call the function to log the contents of formData
-                        logFormData(AI_formData);
-                        // Set the content and mark specific lines as editable
-                        const thread = editor_AI.getValue()
-                        editor_AI.setValue(thread + '\n\nCoding Assistant (auto): ' + data.ai_response);
-                    }
-                } else {
-                    if (!editor_AI.getValue()) {
-                        editor_AI.setValue('System: Assistant is not responding, please try in a moment.\nInput your question below again:\n');
-                    }
-
-                }
-
-
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                output_form.setValue('An error occurred while processing your request');
-            });
-    }
-
-        // Function to handle chat with AI
-        function handleAIFormSubmission(event) {
-        event.preventDefault();
-
-
-        AI_inputElement.classList.add('customClass');
-        input_AI.setOption('readOnly', true);
-
-        message = input_AI.getValue();
-        AI_formData.append('input_message', message);
-        fetch('{% url 'chat_code' %}', {
+        fetch('{% url 'process_code' %}', {
             method: 'POST',
             body: AI_formData,
             headers: {
@@ -367,8 +116,9 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         })
         .then(response => {
-            AI_inputElement.classList.remove('customClass');
-            input_AI.setOption('readOnly', false);
+
+                    editorElement.classList.remove('customClass');
+                    editor.setOption('readOnly', false);
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
@@ -376,22 +126,81 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         .then(data => {
             if (data.ai_response) {
-                console.log('thread id: ', data.thread_id);
-                // Append AI message to the thread
-                logFormData(AI_formData);
-                let thread = editor_AI.getValue();
-                editor_AI.setValue(thread + '\n\nUser: ' + message + '\n\nCoding Assistant: ' + data.ai_response);
-                // Delete message from input form
-                input_AI.setValue('');
+
+                if (!editor_AI.getValue()) {
+
+                    AI_formData.append('thread_id', data.thread_id);
+                    AI_formData.append('assistant_id', data.assistant_id);
+
+                    // Call the function to log the contents of formData
+                    logFormData(AI_formData);
+                    // Set the content and mark specific lines as editable
+                    editor_AI.setValue("Coding Assistant (auto): " + data.ai_response);
+                } else {
+                    // Call the function to log the contents of formData
+                    logFormData(AI_formData);
+                    // Set the content and mark specific lines as editable
+                    const thread = editor_AI.getValue()
+                    editor_AI.setValue(thread + '\n\nCoding Assistant (auto): ' + data.ai_response);
+                }
             } else {
-                let thread = editor_AI.getValue();
-                editor_AI.setValue(thread + '\n\nUser: ' + message + '\n\nCoding Assistant: Assistant is not responding, try again in a moment...');
+                if (!editor_AI.getValue()) {
+                editor_AI.setValue('System: Assistant is not responding, please try in a moment.\nInput your question below again:\n');
             }
+
+            }
+
+
         })
         .catch(error => {
             console.error('Error:', error);
             output_form.setValue('An error occurred while processing your request');
         });
+    }
+
+                // Function to handle AI form submission
+        function handleAIFormSubmission(event) {
+            event.preventDefault();
+
+
+            AI_inputElement.classList.add('customClass');
+            input_AI.setOption('readOnly', true);
+
+            message = input_AI.getValue();
+            AI_formData.append('input_message', message);
+            fetch('{% url 'chat_code' %}', {
+                method: 'POST',
+                body: AI_formData,
+                headers: {
+                    'X-CSRFToken': 'ZUP3t44Y65LUc73Xf9Ttev8TnyHF3QzKk4gmydjMKbletcifqGx3RUGNzQoH5WeK'
+                }
+            })
+            .then(response => {
+                AI_inputElement.classList.remove('customClass');
+                input_AI.setOption('readOnly', false);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.ai_response) {
+                    console.log('thread id: ', data.thread_id);
+                    // Append AI message to the thread
+                    logFormData(AI_formData);
+                    let thread = editor_AI.getValue();
+                    editor_AI.setValue(thread + '\n\nUser: ' + message + '\n\nCoding Assistant: ' + data.ai_response);
+                    // Delete message from input form
+                    input_AI.setValue('');
+                } else {
+                    let thread = editor_AI.getValue();
+                    editor_AI.setValue(thread + '\n\nUser: ' + message + '\n\nCoding Assistant: Assistant is not responding, try again in a moment...');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                output_form.setValue('An error occurred while processing your request');
+            });
 
 
         }
@@ -414,10 +223,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
             // Add the event listener to capture output form changes
-            if (current_task) {
             output_form.on('change', handleOutputFormChange);
-
-            }
 
             // Initialize inputsProcessed to 0 if not already set
             form.dataset.inputsProcessed = form.dataset.inputsProcessed ? parseInt(form.dataset.inputsProcessed) : 0;
@@ -448,6 +254,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     console.log('Control - move to Input!');
                     const prompt_line = parseInt(data.prompt_message);
                     output_form.setValue(data.output + '\n');
+
+                    // Disable the event listener so we no longer track output form changes
+                    output_form.off('change', handleOutputFormChange);
                     form.removeEventListener('submit', handleFormSubmission);
 
                     form.addEventListener('submit', handleInputSubmission);
@@ -473,7 +282,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         editor.addLineClass(prompt_line, 'background', 'error-highlighted-line');
                         previousLine = prompt_line;
                     }
-                    // Disable the event listener
+                // Disable the event listener
                     output_form.off('change', handleOutputFormChange);
 
                 formData.set('code', "");
@@ -487,6 +296,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             });
         }
+
 
         // Function to handle input submission
         function handleInputSubmission(event) {
@@ -611,22 +421,46 @@ document.addEventListener('DOMContentLoaded', function () {
                 output_form.setValue('An error occurred while processing your request');
             });
         }
-
-
-
-
-
-
     });
 
+ function handleExecutionClick(taskId, event) {
+        if (event) {
+        event.preventDefault(); // Prevent form submission
+        }
+    const taskTextarea = document.getElementById('task-' + taskId);
+    const code_example = taskTextarea.value
+    editor.setValue(code_example);
+    const taskData = new FormData();
+    taskData.append('task_id', taskId);
+    fetch('{% url 'start_thread' %}', {
+                method: 'POST',
+                body: taskData,
+                headers: {
+                    'X-CSRFToken': 'ZUP3t44Y65LUc73Xf9Ttev8TnyHF3QzKk4gmydjMKbletcifqGx3RUGNzQoH5WeK'
+                }
+            })
+            .then(response => {
+                Prism.highlightAll();
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+            if (data.thread_id) {
 
-</script>
+                AI_formData = new FormData();
+                AI_formData.append('thread_id', data.thread_id);
+                AI_formData.append('assistant_id', data.assistant_id);
+                AI_formData.append('code', code_example);
+                AI_formData.append('output', '');
+                // Assuming 'editor_AI' is another instance of CodeMirror
+                editor_AI.setValue('###**Task:** ' + data.task_description +'\n\n##**Coding Assistant (auto):** Hello, my name is Mr.Code.\n\nI am your teaching assistant today! Nice to meet you and lets start our practice.\n\nI gave you some code examples to start practicing. ' + data.ai_response + '\n\nNow you can check the result of execution after pressing the Submit button. \n\nYou can ask me any questions you have about the lesson topic: {{ lesson.title }}'); // Replace 'lessonTitle' with the actual lesson title
 
+                }
 
+                });
 
-
-    <hr>
-{% endblock %}
-
+ }
 
 

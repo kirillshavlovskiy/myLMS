@@ -22,6 +22,7 @@ urlpatterns = [
     path('show-content/', views.display_content, name='display_content'),
     path('process-content/<int:content_id>/', views.content_process_form, name='process_content'),
     path('process-lesson/<int:lesson_id>/', views.lesson_process_code, name='process_lesson'),
-    path('process_code/', views.code_process, name='process_code'),
-    path('chat_initialise/', views.chat_code, name='chat_code'),
+    path('process_code/', views.code_process_ai, name='process_code'),
+    path('thread_start/', views.start_thread, name='start_thread'),
+    path('chat_initialise/', views.chat, name='chat_code'),
 ]

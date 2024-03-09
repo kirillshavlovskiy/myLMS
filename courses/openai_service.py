@@ -62,12 +62,14 @@ def message_loop(prompt, assistant_id, thread_id):
             break
 
 
-def assistant_start_preprocess(code, task, thread_id):
+def assistant_preprocess_task(code, output, thread_id, task_description):
     print('check if assistant started')
     try:
-        prompt_1 = 'there is a task: ' + str(task)
-        prompt_2 = '\nFor following code please provide detailed explanation on how we should approach same task completion:\n' + str(code)
-        request = f"{prompt_1} {prompt_2} "
+        prompt_1 = 'There is a task: ' + str(task_description)
+        prompt_2 = "In following code please check every line and validate execution response. Advise code does not correspond to the task: \
+                         \n" + code + '\nExecution response:\n' + str(output) + '\nShow corrected code in the end, but only if \
+                         corrected code really change the result of code execution. Return message <<Code is ok!>> if code correctly address the task.'
+        request = f"{prompt_1}{prompt_2}"
         assistant_id = 'asst_Kx2zKp0x0r3fLA6ZFiIGVsPZ'
         ai_response = message_loop(request, assistant_id, thread_id)
 
