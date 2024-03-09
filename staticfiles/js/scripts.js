@@ -19,7 +19,7 @@
                 taskData.append('task_id', taskId);
                 output_form.setValue('')
 
-                fetch('{% url "start_thread" %}', {
+                fetch('{% url 'start_thread' %}', {
                     method: 'POST',
                     body: taskData,
                     headers: {
@@ -155,7 +155,7 @@ document.addEventListener('DOMContentLoaded', function () {
         form_input_ai.dataset.output = output
 
         logFormData(AI_formData);
-        fetch('{% url "process_code"  %}', {
+        fetch('{% url 'process_code'  %}', {
             method: 'POST',
             body: AI_formData,
             headers: {
@@ -213,7 +213,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         message = input_AI.getValue();
         AI_formData.append('input_message', message);
-        fetch('{% url "chat_code" %}', {
+        fetch('{% url 'chat_code' %}', {
             method: 'POST',
             body: AI_formData,
             headers: {
@@ -278,7 +278,7 @@ document.addEventListener('DOMContentLoaded', function () {
             // Initialize symbolsProcessed to '' if not already set
             form.dataset.symbolsProcessed = form.dataset.symbolsProcessed ? form.dataset.symbolsProcessed : '';
             formData.set('code', code);
-            fetch('{% url "process_lesson" lesson.id %}', {
+            fetch('{% url 'process_lesson' lesson.id %}', {
                 method: 'POST',
                 body: formData,
                 headers: {
@@ -331,7 +331,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     output_form.off('change', handleOutputFormChange);
 
                 formData.set('code', "");
-                    fetch('{% url "process_lesson" lesson.id %}', {
+                    fetch('{% url 'process_lesson' lesson.id %}', {
                     method: 'POST',
                     body: formData,
                     headers: {
@@ -369,7 +369,7 @@ document.addEventListener('DOMContentLoaded', function () {
             formData.append('inputs_processed', form.dataset.inputsProcessed);
             formData.append('symbols_processed', form.dataset.symbolsProcessed);
 
-            fetch('{% url "process_lesson"" lesson.id %}', {
+            fetch('{% url 'process_lesson' lesson.id %}', {
                 method: 'POST',
                 body: formData,
                 headers: {
@@ -451,7 +451,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     editor.setOption('readOnly', false);
 
                     formData.set('code', "");
-                    fetch('{% url 'process_lesson"" lesson.id %}', {
+                    fetch('{% url 'process_lesson' lesson.id %}', {
                     method: 'POST',
                     body: formData,
                     headers: {
