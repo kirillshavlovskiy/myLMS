@@ -44,7 +44,7 @@
                             current_task = taskId;
                             AI_formData.append('current_task', current_task);
                             // Assuming 'editor_AI' is another instance of CodeMirror
-                            editor_AI.setValue('###__Task:__ ' + data.task_description +'\n\n###__Coding Assistant (auto):__ Hello, my name is Mr.Code.\n\nI am your teaching assistant today! Nice to meet you and lets start our practice.\n\nI gave you some code examples to start practicing. ' + data.ai_response + '\n\nNow you can check the result of sample code execution after pressing the Submit button. \n\nYou can ask me further any questions should you have them about the lesson topic: {{ lesson.title }}');
+                            editor_AI.setValue('###___Task:___ ' + data.task_description +'\n\n###___Coding Assistant (auto):___ Hello, my name is Mr.Code.\n\nI am your teaching assistant today! Nice to meet you and lets start our practice.\n\nI gave you some code examples to start practicing. ' + data.ai_response + '\n\nNow you can check the result of sample code execution after pressing the Submit button. \n\nYou can ask me further any questions should you have them about the lesson topic: {{ lesson.title }}');
                             // Add the event listener to capture output form changes
 
                         }
