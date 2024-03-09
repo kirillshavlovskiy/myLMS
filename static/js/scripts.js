@@ -369,7 +369,7 @@ document.addEventListener('DOMContentLoaded', function () {
             formData.append('inputs_processed', form.dataset.inputsProcessed);
             formData.append('symbols_processed', form.dataset.symbolsProcessed);
 
-            fetch('{% url "process_lesson"" lesson.id %}', {
+            fetch('{% url "process_lesson" lesson.id %}', {
                 method: 'POST',
                 body: formData,
                 headers: {
@@ -451,7 +451,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     editor.setOption('readOnly', false);
 
                     formData.set('code', "");
-                    fetch('{% url 'process_lesson"" lesson.id %}', {
+                    fetch('{% url "process_lesson" lesson.id %}', {
                     method: 'POST',
                     body: formData,
                     headers: {
@@ -462,7 +462,7 @@ document.addEventListener('DOMContentLoaded', function () {
             })
             .catch(error => {
                 console.error('Error:', error);
-                output_form.setValue('An error occurred while processing your request');
+                output_form.setValue('an error occurred while processing your request');
             });
         }
 
