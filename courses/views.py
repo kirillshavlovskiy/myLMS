@@ -159,8 +159,10 @@ def save_thread(request):
     if request.method == 'POST':
         task_id = request.POST.get('task_id')
         thread = request.POST.get('thread')
+        code = request.POST.get('code')
         task_thread = Task_thread.objects.filter(task_id=task_id).last()
         task_thread.learning_thread += [thread]
+        task_thread.code = code
         task_thread.save()
         return JsonResponse({'system_message': 'saved'})
     else:
@@ -170,40 +172,40 @@ def save_thread(request):
 
 
 def start_thread(request):
-
     try:
         print('start_thread:')
         if request.method == 'POST':
-          task_id = request.POST.get('task_id')
-          code = request.POST.get('code')
-          print(task_id)
-          task = get_object_or_404(Task, id=task_id)
-          assistant_id = 'asst_Kx2zKp0x0r3fLA6ZFiIGVsPZ'
-          print(code)
-          if not Task_thread.objects.filter(task=task).exists():
-              thread = client.beta.threads.create()
-              task_thread = Task_thread.objects.create(thread_id=thread.id,
-                                                       assistant_id=assistant_id,
-                                                       task=task)
-              task_thread.save()
-              thread_id = task_thread.thread_id
-              prompt_1 = 'There is a task: ' + str(task.description)
-              prompt_2 = '\nFor the following code, please provide a detailed explanation starting from topic basics on how we should approach coding task completion:\n' + str(code)
-              message = f"{prompt_1} {prompt_2} "
-              print(task_thread)
-              AI_response = message_loop(message, assistant_id, thread_id)
-              print("AI_response: ", AI_response)
-              return JsonResponse(
-                  {'ai_response': AI_response, 'thread_id': thread_id, 'task_description': task.description})
-          else:
-              task_thread = Task_thread.objects.filter(task_id=task_id).last()
-              messages = task_thread.learning_thread[-1]
-              print("messages: ", messages)
-              return JsonResponse({'messages': messages})
+            task_id = request.POST.get('task_id')
+            code = request.POST.get('code')
+            print(task_id)
+            task = get_object_or_404(Task, id=task_id)
+            assistant_id = 'asst_Kx2zKp0x0r3fLA6ZFiIGVsPZ'
+            print(code)
+            if not Task_thread.objects.filter(task=task).exists():
+                thread = client.beta.threads.create()
+                task_thread = Task_thread.objects.create(thread_id=thread.id,
+                                                         assistant_id=assistant_id,
+                                                         task=task)
+                task_thread.save()
+                thread_id = task_thread.thread_id
+                prompt_1 = 'There is a task: ' + str(task.description)
+                prompt_2 = '\nFor the following code, please provide a detailed explanation starting from topic basics on how we should approach coding task completion:\n' + str(
+                    code)
+                message = f"{prompt_1} {prompt_2} "
+                print(task_thread)
+                AI_response = message_loop(message, assistant_id, thread_id)
+                print("AI_response: ", AI_response)
+                return JsonResponse(
+                    {'ai_response': AI_response, 'thread_id': thread_id, 'task_description': task.description})
+            else:
+                task_thread = Task_thread.objects.filter(task_id=task_id).last()
+                messages = task_thread.learning_thread[-1]
+                print("messages: ", messages)
+                return JsonResponse({'messages': messages, 'thread_id': task_thread.thread_id})
         else:
-          # Handle the case when the form is not valid
-          print("Form is not valid")
-          return JsonResponse({'error': 'Form is not valid'})
+            # Handle the case when the form is not valid
+            print("Form is not valid")
+            return JsonResponse({'error': 'Form is not valid'})
     except Exception as e:
         # Handle any exception that occurred
 
@@ -241,7 +243,7 @@ def code_process_ai(request):
             code = request.POST.get('code')
             output = request.POST.get('output')
             thread_id = request.POST.get('thread_id')
-            task_id = request.POST.get('current_task')
+            task_id = request.POST.get('task_id')
             print(task_id)
             task = get_object_or_404(Task, id=task_id)
             print('task id found: ', task_id)
