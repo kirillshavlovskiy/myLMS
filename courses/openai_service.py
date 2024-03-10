@@ -4,7 +4,7 @@ from openai import OpenAI
 import time
 import os
 
-client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY", "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"))
+client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY", "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"))
 
 
 def check_run(client, thread_id, run_id):
@@ -66,7 +66,7 @@ def assistant_preprocess_task(code, output, thread_id, task_description):
     print('check if assistant started')
     try:
         prompt_1 = 'There is a task: ' + str(task_description)
-        prompt_2 = "In following code please check every line and validate execution response. Advise code does not correspond to the task: \
+        prompt_2 = "In following code please check every line and validate execution response. Advise if code does not correspond to the task: \
                          \n" + code + '\nExecution response:\n' + str(output) + '\nShow corrected code in the end, but only if \
                          corrected code really change the result of code execution. Return message <<Code is ok!>> if code correctly address the task.'
         request = f"{prompt_1}{prompt_2}"

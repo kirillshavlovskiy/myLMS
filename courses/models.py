@@ -59,7 +59,7 @@ class Task_thread(models.Model):
     tasks_solved = models.IntegerField(default=0)
     runs = models.IntegerField(default=0)
     prompts = models.JSONField(default=dict)  # Thisfield will now store a list
-    responses = models.JSONField(default=dict)  # This field will now store a list
+    learning_thread = models.JSONField(default=list)  # This field will now store a list
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)
 

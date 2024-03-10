@@ -133,31 +133,17 @@ def lesson_process_code(request, lesson_id):
     })
 
 
-def start_thread(request):
+def retrieve_thread(request):
     try:
-        print('start_thread:')
+        print('Log: start_thread retrieve:')
         if request.method == 'POST':
             task_id = request.POST.get('task_id')
-            code = request.POST.get('code')
             print(task_id)
-            task = get_object_or_404(Task, id=task_id)
-            assistant_id = 'asst_Kx2zKp0x0r3fLA6ZFiIGVsPZ'
-            print(code)
-            thread = client.beta.threads.create()
-            thread_id = thread.id
-            prompt_1 = 'There is a task: ' + str(task.description)
-            prompt_2 = '\nFor following code please provide detailed explanation on how we should approach same task completion:\n' + str(
-                code)
-            message = f"{prompt_1} {prompt_2} "
-            task_thread = Task_thread.objects.create(thread_id=thread_id,
-                                                     assistant_id=assistant_id,
-                                                     task=task)
-            task_thread.save()
-            print(task_thread)
-            AI_response = message_loop(message, assistant_id, thread_id)
-            print("AI_response: ", AI_response)
+            task_thread = Task_thread.objects.filter(task_id=task_id).last()
+            messages = client.beta.threads.messages.list(thread_id=task_thread.thread_id)
+            print("messages: ", messages)
             return JsonResponse(
-                {'ai_response': AI_response, 'thread_id': thread_id, 'task_description': task.description})
+                {'messages': messages})
         else:
             # Handle the case when the form is not valid
             print("Form is not valid")
@@ -167,6 +153,62 @@ def start_thread(request):
 
         print('error', str(e))
         return JsonResponse({'error:': str(e)})
+
+
+def save_thread(request):
+    if request.method == 'POST':
+        task_id = request.POST.get('task_id')
+        thread = request.POST.get('thread')
+        task_thread = Task_thread.objects.filter(task_id=task_id).last()
+        task_thread.learning_thread += [thread]
+        task_thread.save()
+        return JsonResponse({'system_message': 'saved'})
+    else:
+        # Handle the case when the form is not valid
+        print("Form is not valid")
+        return JsonResponse({'error': 'Form is not valid'})
+
+
+def start_thread(request):
+
+    try:
+        print('start_thread:')
+        if request.method == 'POST':
+          task_id = request.POST.get('task_id')
+          code = request.POST.get('code')
+          print(task_id)
+          task = get_object_or_404(Task, id=task_id)
+          assistant_id = 'asst_Kx2zKp0x0r3fLA6ZFiIGVsPZ'
+          print(code)
+          if not Task_thread.objects.filter(task=task).exists():
+              thread = client.beta.threads.create()
+              task_thread = Task_thread.objects.create(thread_id=thread.id,
+                                                       assistant_id=assistant_id,
+                                                       task=task)
+              task_thread.save()
+              thread_id = task_thread.thread_id
+              prompt_1 = 'There is a task: ' + str(task.description)
+              prompt_2 = '\nFor the following code, please provide a detailed explanation starting from topic basics on how we should approach coding task completion:\n' + str(code)
+              message = f"{prompt_1} {prompt_2} "
+              print(task_thread)
+              AI_response = message_loop(message, assistant_id, thread_id)
+              print("AI_response: ", AI_response)
+              return JsonResponse(
+                  {'ai_response': AI_response, 'thread_id': thread_id, 'task_description': task.description})
+          else:
+              task_thread = Task_thread.objects.filter(task_id=task_id).last()
+              messages = task_thread.learning_thread[-1]
+              print("messages: ", messages)
+              return JsonResponse({'messages': messages})
+        else:
+          # Handle the case when the form is not valid
+          print("Form is not valid")
+          return JsonResponse({'error': 'Form is not valid'})
+    except Exception as e:
+        # Handle any exception that occurred
+
+        print('error', str(e))
+        return JsonResponse({'error': str(e)})
 
 
 def chat(request):
@@ -324,4 +366,3 @@ def create_content(request):
     else:
         form = ContentForm()
     return render(request, 'courses/Show_content_generation_form.html', {'form': form})
-# Create your views here.

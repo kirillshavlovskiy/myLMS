@@ -12,7 +12,8 @@
     <h4>{{ task.description }}</h4>
 
         <textarea id="task-{{ task.id }}" placeholder="Output will appear here">{{ task.correct_code }}</textarea>
-         <button onclick="handleExecutionClick('{{ task.id }}')">Send for execution</button>
+         <button class="input-button" onclick="handleExecutionClick('{{ task.id }}')">Send for execution</button>
+         <button is="retrieve-task-{{ task.id }}" class="input-button" onclick="handleRetrievalClick('{{ task.id }}')">Retrieve thread history</button>
     <script>
     const taskBlock{{ task.id }} = CodeMirror.fromTextArea(document.getElementById('task-' + {{ task.id }}), {
         lineNumbers: false,
@@ -26,10 +27,12 @@
 </script>
 </div>
 {% endfor %}
-
+<div id="my-element" data-start-thread-url="{% url 'start_thread' %}">
+    <!-- Your HTML content here -->
+</div>
 <div class="container">
     <div class="form-container">
-        <div class="form-wrapper-left">
+        <div id="wrapper-left" class="form-wrapper-left" data-start-interpreter="{% url 'process_lesson' lesson.id %}">
             <h2>Practice section:</h2>
             <form id="code-form">
                 {% csrf_token %}
@@ -128,11 +131,10 @@
 <!-- Import React and any necessary libraries -->
 <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
 <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
-<!-- Define React components -->
 <!-- Mount React components -->
 <script src="{% static 'js/react-app.js' %}"></script>
 <!-- Mount React component to root element -->
-<!-- Define your TextEditor component -->
+
     <hr>
 {% endblock %}
 
