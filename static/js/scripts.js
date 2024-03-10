@@ -30,7 +30,7 @@ var startIDEUrl = myElement.getAttribute('data-start-interpreter');
                 taskData.append('task_id', taskId);
                 taskData.append('code', code_example);
                 output_form.setValue('')
-                logFormData(taskData)
+
                 fetch('/courses/thread_start/', {
                     method: 'POST',
                     body: taskData,
@@ -50,19 +50,19 @@ var startIDEUrl = myElement.getAttribute('data-start-interpreter');
 
                                 AI_formData = new FormData();
                                 AI_formData.append('thread_id', data.thread_id);
+                                AI_formData.append('task_id', taskId);
                                 AI_formData.append('assistant_id', data.assistant_id);
                                 AI_formData.append('code', code_example);
                                 AI_formData.append('output', '');
-                                current_task = taskId;
-                                AI_formData.append('current_task', current_task);
                                 // Assuming 'editor_AI' is another instance of CodeMirror
                                 editor_AI.setValue('###___Thread ID:___' + data.thread_id + '\n\n###___Task:___' + data.task_description +'\n\n###___Coding Assistant (auto):___ \n\nHello, my name is Mr.Code. I am your teaching assistant today! Nice to meet you and lets start our practice. I gave you some code examples to start practicing.' + data.ai_response + '\n\nNow you can check the result of sample code execution after pressing the Submit button. \n\nYou can ask me further any questions should you have them about this lesson!');
                                 // Add the event listener to capture output form changes
                                 thread = editor_AI.getValue();
-                                taskData.append('thread', thread)
+                                AI_formData.append('thread', thread)
+
                                  fetch('/courses/thread_save/', {
                                     method: 'POST',
-                                    body: taskData,
+                                    body: AI_formData,
                                     headers: {
                                         'X-CSRFToken': 'ZUP3t44Y65LUc73Xf9Ttev8TnyHF3QzKk4gmydjMKbletcifqGx3RUGNzQoH5WeK'
                                     }
@@ -82,8 +82,13 @@ var startIDEUrl = myElement.getAttribute('data-start-interpreter');
                                 });
 
                             } else {  if (data.messages) {
-                                editor_AI.setValue(data.messages)
-                                }}
+                                        editor_AI.setValue(data.messages)
+                                        } else {
+                                let thread = editor_AI.getValue();
+                                editor_AI.setValue('\n\n' + thread + '\n\n###___Coding Assistant:___\n\nAssistant is not responding, try again in a moment...');
+                                } }
+                               current_task = taskId;
+                               AI_formData.set('task_id', current_task);
                             });
 
             }
@@ -98,7 +103,7 @@ var startIDEUrl = myElement.getAttribute('data-start-interpreter');
                 editor.setValue(code_example);
                 const taskData = new FormData();
 
-                logFormData(AI_formData)
+
                 fetch('/courses/thread_retrieve/', {
                     method: 'POST',
                     body: AI_formData,
@@ -240,8 +245,7 @@ var startIDEUrl = myElement.getAttribute('data-start-interpreter');
             })
              .then(response => {
 
-                editorElement.classList.remove('customClass');
-                editor.setOption('readOnly', false);
+
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
@@ -270,7 +274,28 @@ var startIDEUrl = myElement.getAttribute('data-start-interpreter');
                     }
 
                 }
+                thread = editor_AI.getValue();
+                AI_formData.set('thread', thread)
+                 fetch('/courses/thread_save/', {
+                    method: 'POST',
+                    body: AI_formData,
+                    headers: {
+                        'X-CSRFToken': 'ZUP3t44Y65LUc73Xf9Ttev8TnyHF3QzKk4gmydjMKbletcifqGx3RUGNzQoH5WeK'
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                        return response.json();
+                    })
+                        .then(data => {
+                            if (data.system_message) {
+                           editor_AI.setValue(thread + '\n\nSaved\n\n')
+                            }
 
+
+                });
 
                 })
                 .catch(error => {
@@ -344,7 +369,10 @@ var startIDEUrl = myElement.getAttribute('data-start-interpreter');
                 return;
             }
             // Add the event listener to capture output form changes
-            if (current_task) {
+            console.log('Code execution started');
+             logFormData(AI_formData);
+            if (AI_formData.task_id !== null) {
+            console.log('current task: ', AI_formData.task_id);
             output_form.on('change', handleOutputFormChange);
 
             }
@@ -362,7 +390,8 @@ var startIDEUrl = myElement.getAttribute('data-start-interpreter');
                 }
             })
             .then(response => {
-
+            editorElement.classList.remove('customClass');
+            editor.setOption('readOnly', false);
 
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
