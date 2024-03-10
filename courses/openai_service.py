@@ -4,7 +4,7 @@ from openai import OpenAI
 import time
 import os
 
-openai.api_key = os.environ["OPENAI_API_KEY"]
+client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY", "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"))
 
 
 def check_run(client, thread_id, run_id):
