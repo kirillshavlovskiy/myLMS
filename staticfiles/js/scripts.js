@@ -8,7 +8,18 @@
     let AI_formData = new FormData();
     let current_task;
 
-        function handleExecutionClick(taskId, event) {
+var myElement = document.getElementById('wrapper-left');
+var startIDEUrl = myElement.getAttribute('data-start-interpreter');
+
+
+    // Display the contents of the FormData object
+    function logFormData(formData) {
+        for (let pair of formData.entries()) {
+            console.log(pair[0] + ': ' + pair[1]);
+        }
+    }
+
+    function handleExecutionClick(taskId, event) {
                 if (event) {
                     event.preventDefault(); // Prevent form submission
                 }
@@ -17,45 +28,120 @@
                 editor.setValue(code_example);
                 const taskData = new FormData();
                 taskData.append('task_id', taskId);
+                taskData.append('code', code_example);
                 output_form.setValue('')
 
-                fetch('{% url 'start_thread' %}', {
+                fetch('/courses/thread_start/', {
                     method: 'POST',
                     body: taskData,
                     headers: {
                         'X-CSRFToken': 'ZUP3t44Y65LUc73Xf9Ttev8TnyHF3QzKk4gmydjMKbletcifqGx3RUGNzQoH5WeK'
                     }
                 })
+                .then(response => {
+                        Prism.highlightAll();
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                        .then(data => {
+                            if (data.thread_id) {
+
+                                AI_formData = new FormData();
+                                AI_formData.append('thread_id', data.thread_id);
+                                AI_formData.append('task_id', taskId);
+                                AI_formData.append('assistant_id', data.assistant_id);
+                                AI_formData.append('code', code_example);
+                                AI_formData.append('output', '');
+                                // Assuming 'editor_AI' is another instance of CodeMirror
+                                editor_AI.setValue('###___Thread ID:___' + data.thread_id + '\n\n###___Task:___' + data.task_description +'\n\n###___Coding Assistant (auto):___ \n\nHello, my name is Mr.Code. I am your teaching assistant today! Nice to meet you and lets start our practice. I gave you some code examples to start practicing.' + data.ai_response + '\n\nNow you can check the result of sample code execution after pressing the Submit button. \n\nYou can ask me further any questions should you have them about this lesson!');
+                                // Add the event listener to capture output form changes
+                                thread = editor_AI.getValue();
+                                AI_formData.append('thread', thread)
+
+                                 fetch('/courses/thread_save/', {
+                                    method: 'POST',
+                                    body: AI_formData,
+                                    headers: {
+                                        'X-CSRFToken': 'ZUP3t44Y65LUc73Xf9Ttev8TnyHF3QzKk4gmydjMKbletcifqGx3RUGNzQoH5WeK'
+                                    }
+                                })
+                                .then(response => {
+                                    if (!response.ok) {
+                                        throw new Error('Network response was not ok');
+                                    }
+                                        return response.json();
+                                    })
+                                        .then(data => {
+                                            if (data.system_message) {
+                                           editor_AI.setValue(thread + '\n\nSaved\n\n')
+                                            }
+
+
+                                });
+
+                            } else {  if (data.messages) {
+                                        editor_AI.setValue(data.messages)
+                                        } else {
+                                let thread = editor_AI.getValue();
+                                editor_AI.setValue('\n\n' + thread + '\n\n###___Coding Assistant:___\n\nAssistant is not responding, try again in a moment...');
+                                } }
+                               current_task = taskId;
+                               AI_formData.set('task_id', current_task);
+                            });
+
+            }
+
+    //reserve function to retrieve all the messages (system and user) in the thread
+    function handleRetrievalClick(taskId, event) {
+                if (event) {
+                    event.preventDefault(); // Prevent form submission
+                }
+                const taskTextarea = document.getElementById('task-' + taskId);
+                const code_example = taskTextarea.value
+                editor.setValue(code_example);
+                const taskData = new FormData();
+
+
+                fetch('/courses/thread_retrieve/', {
+                    method: 'POST',
+                    body: AI_formData,
+                    headers: {
+                        'X-CSRFToken': 'ZUP3t44Y65LUc73Xf9Ttev8TnyHF3QzKk4gmydjMKbletcifqGx3RUGNzQoH5WeK'
+                    }
+                })
             .then(response => {
-                    Prism.highlightAll();
+
                     if (!response.ok) {
                         throw new Error('Network response was not ok');
                     }
                     return response.json();
                 })
                     .then(data => {
-                        if (data.thread_id) {
-
-                            AI_formData = new FormData();
-                            AI_formData.append('thread_id', data.thread_id);
-                            AI_formData.append('assistant_id', data.assistant_id);
-                            AI_formData.append('code', code_example);
-                            AI_formData.append('output', '');
-                            current_task = taskId;
-                            AI_formData.append('current_task', current_task);
-                            // Assuming 'editor_AI' is another instance of CodeMirror
-                            editor_AI.setValue('###__Task:__ ' + data.task_description +'\n\n###__Coding Assistant (auto):__ Hello, my name is Mr.Code.\n\nI am your teaching assistant today! Nice to meet you and lets start our practice.\n\nI gave you some code examples to start practicing. ' + data.ai_response + '\n\nNow you can check the result of sample code execution after pressing the Submit button. \n\nYou can ask me further any questions should you have them about the lesson topic: {{ lesson.title }}');
-                            // Add the event listener to capture output form changes
-
-                        }
-
+                        updateCodeMirror(data.messages);
                     });
 
             }
 
+    // Function to update CodeMirror with messages
+    function updateCodeMirror(messages) {
+        // Check if messages array exists
+        if (messages && messages.length > 0) {
+            // Assuming 'editor' is your CodeMirror instance
+            messages.forEach(message => {
+                // Append each message to the CodeMirror instance
+                // You can use setValue() or replaceRange() based on your requirements
+                editor.replaceRange(message.text + '\n', CodeMirror.Pos(editor.lastLine()));
+            });
+        } else {
+            console.log('No messages found.'); // Log a message if no messages are found
+        }
+    }
 
 
-document.addEventListener('DOMContentLoaded', function () {
+
+    document.addEventListener('DOMContentLoaded', function () {
         const form = document.getElementById('code-form');
         const form_ai = document.getElementById('code-form-ai');
         const form_input_ai = document.getElementById('code-input-ai');
@@ -122,12 +208,7 @@ document.addEventListener('DOMContentLoaded', function () {
         cleanHighlight(instance.getValue());
         });
 
-        // Display the contents of the FormData object
-        function logFormData(formData) {
-            for (let pair of formData.entries()) {
-                console.log(pair[0] + ': ' + pair[1]);
-            }
-        }
+
 
         // Function to clear all highlights from editor
         function cleanHighlight() {
@@ -144,34 +225,33 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Function to handle form submission to AI
         function handleResponseAI() {
-        console.log('handleResponseAI triggered')
-        const output = output_form.getValue().trim();
-        const code = editor.getValue().trim();
+            console.log('handleResponseAI triggered')
+            const output = output_form.getValue().trim();
+            const code = editor.getValue().trim();
 
-        AI_formData.set('output', output);
-        AI_formData.set('code', code);
+            AI_formData.set('output', output);
+            AI_formData.set('code', code);
 
-        form_input_ai.dataset.code = code
-        form_input_ai.dataset.output = output
+            form_input_ai.dataset.code = code
+            form_input_ai.dataset.output = output
 
-        logFormData(AI_formData);
-        fetch('{% url 'process_code'  %}', {
-            method: 'POST',
-            body: AI_formData,
-            headers: {
-                'X-CSRFToken': 'ZUP3t44Y65LUc73Xf9Ttev8TnyHF3QzKk4gmydjMKbletcifqGx3RUGNzQoH5WeK'
-            }
-        })
-    .then(response => {
+            logFormData(AI_formData);
+            fetch('/courses/process_code/', {
+                method: 'POST',
+                body: AI_formData,
+                headers: {
+                    'X-CSRFToken': 'ZUP3t44Y65LUc73Xf9Ttev8TnyHF3QzKk4gmydjMKbletcifqGx3RUGNzQoH5WeK'
+                }
+            })
+             .then(response => {
 
-            editorElement.classList.remove('customClass');
-            editor.setOption('readOnly', false);
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-            .then(data => {
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+           .then(data => {
                 if (data.ai_response) {
 
                     if (!editor_AI.getValue()) {
@@ -180,28 +260,49 @@ document.addEventListener('DOMContentLoaded', function () {
                         // Call the function to log the contents of formData
                         logFormData(AI_formData);
                         // Set the content and mark specific lines as editable
-                        editor_AI.setValue("Coding Assistant (auto): " + data.ai_response);
+                        editor_AI.setValue('\n\n###___Thread ID:___' + data.thread_id + '\n\n###___Coding Assistant (auto):___' + data.ai_response);
                     } else {
                         // Call the function to log the contents of formData
                         logFormData(AI_formData);
                         // Set the content and mark specific lines as editable
                         const thread = editor_AI.getValue()
-                        editor_AI.setValue(thread + '\n\nCoding Assistant (auto): ' + data.ai_response);
+                        editor_AI.setValue(thread + '\n\n###___Thread ID:___' + data.thread_id + '\n\n###___Coding Assistant (auto):___' + data.ai_response);
                     }
                 } else {
                     if (!editor_AI.getValue()) {
-                        editor_AI.setValue('System: Assistant is not responding, please try in a moment.\nInput your question below again:\n');
+                        editor_AI.setValue('\n\n###___Thread ID:___' + data.thread_id + '\n\nSystem: Assistant is not responding, please try in a moment.\nInput your question below again:\n');
                     }
 
                 }
+                thread = editor_AI.getValue();
+                AI_formData.set('thread', thread)
+                 fetch('/courses/thread_save/', {
+                    method: 'POST',
+                    body: AI_formData,
+                    headers: {
+                        'X-CSRFToken': 'ZUP3t44Y65LUc73Xf9Ttev8TnyHF3QzKk4gmydjMKbletcifqGx3RUGNzQoH5WeK'
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                        return response.json();
+                    })
+                        .then(data => {
+                            if (data.system_message) {
+                           editor_AI.setValue(thread + '\n\nSaved\n\n')
+                            }
 
 
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                output_form.setValue('An error occurred while processing your request');
-            });
-    }
+                });
+
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    output_form.setValue('An error occurred while processing your request');
+                });
+        }
 
         // Function to handle chat with AI
         function handleAIFormSubmission(event) {
@@ -213,7 +314,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         message = input_AI.getValue();
         AI_formData.append('input_message', message);
-        fetch('{% url 'chat_code' %}', {
+        fetch('/courses/chat_initialise/', {
             method: 'POST',
             body: AI_formData,
             headers: {
@@ -234,12 +335,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 // Append AI message to the thread
                 logFormData(AI_formData);
                 let thread = editor_AI.getValue();
-                editor_AI.setValue(thread + '\n\nUser: ' + message + '\n\nCoding Assistant: ' + data.ai_response);
+                editor_AI.setValue(thread + '\n\n###___Thread ID:___' + data.thread_id + '\n\n###___User:___\n\n' + message + '\n\n###___Coding Assistant:___\n\n' + data.ai_response);
                 // Delete message from input form
                 input_AI.setValue('');
             } else {
                 let thread = editor_AI.getValue();
-                editor_AI.setValue(thread + '\n\nUser: ' + message + '\n\nCoding Assistant: Assistant is not responding, try again in a moment...');
+                editor_AI.setValue('\n\n###___Thread ID:___' + data.thread_id + '\n\n' + thread + '\n\n###___User:___\n\n' + message + '\n\n###___Coding Assistant:___\n\nAssistant is not responding, try again in a moment...');
             }
         })
         .catch(error => {
@@ -268,7 +369,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
             // Add the event listener to capture output form changes
-            if (current_task) {
+            console.log('Code execution started');
+             logFormData(AI_formData);
+            if (AI_formData.task_id !== null) {
+            console.log('current task: ', AI_formData.task_id);
             output_form.on('change', handleOutputFormChange);
 
             }
@@ -278,7 +382,7 @@ document.addEventListener('DOMContentLoaded', function () {
             // Initialize symbolsProcessed to '' if not already set
             form.dataset.symbolsProcessed = form.dataset.symbolsProcessed ? form.dataset.symbolsProcessed : '';
             formData.set('code', code);
-            fetch('{% url 'process_lesson' lesson.id %}', {
+            fetch(startIDEUrl, {
                 method: 'POST',
                 body: formData,
                 headers: {
@@ -286,7 +390,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             })
             .then(response => {
-
+            editorElement.classList.remove('customClass');
+            editor.setOption('readOnly', false);
 
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
@@ -331,7 +436,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     output_form.off('change', handleOutputFormChange);
 
                 formData.set('code', "");
-                    fetch('{% url 'process_lesson' lesson.id %}', {
+                    fetch(startIDEUrl, {
                     method: 'POST',
                     body: formData,
                     headers: {
@@ -369,7 +474,7 @@ document.addEventListener('DOMContentLoaded', function () {
             formData.append('inputs_processed', form.dataset.inputsProcessed);
             formData.append('symbols_processed', form.dataset.symbolsProcessed);
 
-            fetch('{% url 'process_lesson' lesson.id %}', {
+            fetch(startIDEUrl, {
                 method: 'POST',
                 body: formData,
                 headers: {
@@ -451,7 +556,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     editor.setOption('readOnly', false);
 
                     formData.set('code', "");
-                    fetch('{% url 'process_lesson' lesson.id %}', {
+                    fetch(startIDEUrl, {
                     method: 'POST',
                     body: formData,
                     headers: {
@@ -462,7 +567,7 @@ document.addEventListener('DOMContentLoaded', function () {
             })
             .catch(error => {
                 console.error('Error:', error);
-                output_form.setValue('An error occurred while processing your request');
+                output_form.setValue('an error occurred while processing your request');
             });
         }
 
