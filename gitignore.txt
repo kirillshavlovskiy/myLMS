@@ -1,2 +1,2 @@
 mylms/settings.py
-app/key.env
+courses/key.env
