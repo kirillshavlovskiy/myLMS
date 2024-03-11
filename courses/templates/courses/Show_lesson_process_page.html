@@ -1,6 +1,6 @@
 {% extends 'courses/base.html' %}
 {% load static %}
-<link rel="stylesheet" type="text/css" href="{% static 'js/styles.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'styles.css' %}">
 {% block title %}Reprocess Content{% endblock %}
 
 {% block content %}
@@ -63,13 +63,76 @@
 </div>
 
 <div id="root"></div>
+   <style>
+    .highlighted-line {
+        background-color: rgb(215, 212, 240); /* Set the background color to blue using RGB values */
+        font-weight: bold; /* Set the text to bold */
+    }
+    .highlighted-line-finish {
+        background-color: rgb(217, 217, 217); /* Set the background color to blue using RGB values */
+        font-weight: bold; /* Set the text to bold */
+    }
+    .error-highlighted-line {
+        background-color: rgb(236, 165, 158); /* Set the background color to blue using RGB values */
+        font-weight: bold; /* Set the text to bold */
+    }
+    .CodeMirror {
+    border: 1px solid #808080; /* Add a 1px solid border with color #ccc */
+    border-radius: 5px; /* Add a border radius of 5px */
+    padding: 5px; /* Add some padding inside the CodeMirror */
+}
+</style>
+   <style>
+.container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start; /* Align items at the top */
+}
+
+.form-container {
+    display: flex; /* Use flexbox to position forms side by side */
+    width: 98%; /* Set the width of the form container */
+    margin-bottom: 5%; /* Add margin to the top of the form wrapper */
+}
+
+.form-wrapper-left {
+    display: flex;
+    flex-direction: column;
+    width: 50%; /* Right form takes up 50% of the container width */
+    margin-left: 20px; /* Set distance between forms */
+}
+
+.form-wrapper-right {
+    display: flex;
+    flex-direction: column;
+    width: 50%; /* Right form takes up 50% of the container width */
+    margin-left: 20px; /* Set distance between forms */
+
+}
+
+
+.output-container {
+    width: 100%; /* Set the width of the output container */
+}
+
+#code_output {
+    width: 100%; /* Ensure the output textarea takes up 100% width */
+    height: 200px; /* Set the height of the output textarea to 200 pixels */
+}
+
+.customClass {
+    background-color: rgb(247, 247, 247);
+
+
+}
+
+</style>
 
 <!-- Import React and any necessary libraries -->
 <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
 <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
 <!-- Mount React components -->
 <script src="{% static 'js/react-app.js' %}"></script>
-<script src="{% static 'js/scripts.js' %}"></script>
 <!-- Mount React component to root element -->
 
     <hr>
