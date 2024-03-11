@@ -1,2 +1,2 @@
-mylms/settings.txt
+mylms/settings.py
 app/key.env
