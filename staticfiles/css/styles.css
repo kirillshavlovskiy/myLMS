@@ -1,40 +1,17 @@
-<style>
-#console {
-    background-color: #000;
-    color: #fff;
-    padding: 10px;
-    height: 300px;
-    overflow-y: auto;
-}
-#inputLine {
-    color: #0f0;
-}
-.container {
-    display: flex;
-    justify-content: space-between;
-}
-
-.form-container {
-    width: 45%; /* Adjust as needed */
-}
-import '@fontsource/roboto/300.css';
-import '@fontsource/roboto/400.css';
-import '@fontsource/roboto/500.css';
-import '@fontsource/roboto/700.css';
-
-.highlighted-line {
-    background-color: rgb(215, 212, 240); /* Set the background color to blue using RGB values */
-    font-weight: bold; /* Set the text to bold */
-}
-.highlighted-line-finish {
-    background-color: rgb(217, 217, 217); /* Set the background color to blue using RGB values */
-    font-weight: bold; /* Set the text to bold */
-}
-.error-highlighted-line {
-    background-color: rgb(236, 165, 158); /* Set the background color to blue using RGB values */
-    font-weight: bold; /* Set the text to bold */
-}
-.CodeMirror {
+   <style>
+    .highlighted-line {
+        background-color: rgb(215, 212, 240); /* Set the background color to blue using RGB values */
+        font-weight: bold; /* Set the text to bold */
+    }
+    .highlighted-line-finish {
+        background-color: rgb(217, 217, 217); /* Set the background color to blue using RGB values */
+        font-weight: bold; /* Set the text to bold */
+    }
+    .error-highlighted-line {
+        background-color: rgb(236, 165, 158); /* Set the background color to blue using RGB values */
+        font-weight: bold; /* Set the text to bold */
+    }
+    .CodeMirror {
     border: 1px solid #808080; /* Add a 1px solid border with color #ccc */
     border-radius: 5px; /* Add a border radius of 5px */
     padding: 5px; /* Add some padding inside the CodeMirror */
@@ -88,7 +65,7 @@ import '@fontsource/roboto/700.css';
     display: inline-block;
     padding: 0.5em 1em;
     border: none;
-    border-radius: 0.5em;
+    border-radius: 0.25em;
     background-color: var(--input-bg-color);
     color: var(--input-color);
     font-weight: bold;

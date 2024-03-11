@@ -1,13 +1,32 @@
 <!DOCTYPE html>
-{% load static %}
 <html>
 <head>
     <title>{% block title %}My Learning Platform{% endblock %}</title>
     <style>
+        #console {
+            background-color: #000;
+            color: #fff;
+            padding: 10px;
+            height: 300px;
+            overflow-y: auto;
+        }
+        #inputLine {
+            color: #0f0;
+        }
+        .container {
+            display: flex;
+            justify-content: space-between;
+        }
 
+        .form-container {
+            width: 45%; /* Adjust as needed */
+        }
+        import '@fontsource/roboto/300.css';
+        import '@fontsource/roboto/400.css';
+        import '@fontsource/roboto/500.css';
+        import '@fontsource/roboto/700.css';
     </style>
     <!-- Include the CSS file -->
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/styles/default.min.css">
 
 <!-- Include the JavaScript file -->
@@ -73,6 +92,6 @@
     {% block content %}
     <!-- Page content will go here -->
     {% endblock %}
-
+ <script src="/static/js/scripts.js"></script>
 </body>
 </html>

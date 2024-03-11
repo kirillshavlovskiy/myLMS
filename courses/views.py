@@ -5,10 +5,8 @@ import json
 import os
 from django.conf import settings
 
-import openai
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse, HttpResponse
-from django.views.decorators.http import require_http_methods
 from openai import OpenAI
 
 from .forms import ContentForm, CodeForm
@@ -17,7 +15,7 @@ from .models import Course, Module, Lesson, Task, Task_thread
 from .openai_service import generate_lesson_content, generate_project_content, assistant_thread_run, message_loop, \
     assistant_preprocess_task
 
-
+client = OpenAI(api_key=os.environ.get('OPENAI_API_KEY'))
 
 
 # Enable logging
