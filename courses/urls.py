@@ -18,10 +18,10 @@ from . import views
 
 
 urlpatterns = [
-    path('/add-content/', views.create_content, name='create-content'),
-    path('/show-content/', views.display_content, name='display_content'),
-    path('/process-content/<int:content_id>/', views.content_process_form, name='process_content'),
-    path('/lessons/<int:lesson_id>/', views.lesson_process_code, name='process_lesson'),
+    path('add-content/', views.create_content, name='create-content'),
+    path('show-content/', views.display_content, name='display_content'),
+    path('process-content/<int:content_id>/', views.content_process_form, name='process_content'),
+    path('lessons/<int:lesson_id>/', views.lesson_process_code, name='process_lesson'),
     path('process_code/', views.code_process_ai, name='process_code'),
     path('thread_start/', views.start_thread, name='start_thread'),
     path('chat_initialise/', views.chat, name='chat_code'),
