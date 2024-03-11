@@ -74,12 +74,8 @@ WSGI_APPLICATION = 'mylms.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'mylms',
-        'USER': 'mylms_sysadmin',
-        'PASSWORD': 'qeSmu4-besdet-kafcax',
-        'HOST': 'mylms.cluster-chgw8o6kikn4.eu-north-1.rds.amazonaws.com',
-        'PORT': '5432',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
