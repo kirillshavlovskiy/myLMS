@@ -1,4 +1,21 @@
-<style>
+.highlighted-line {
+        background-color: rgb(215, 212, 240); /* Set the background color to blue using RGB values */
+        font-weight: bold; /* Set the text to bold */
+    }
+.highlighted-line-finish {
+    background-color: rgb(217, 217, 217); /* Set the background color to blue using RGB values */
+    font-weight: bold; /* Set the text to bold */
+}
+.error-highlighted-line {
+    background-color: rgb(236, 165, 158); /* Set the background color to blue using RGB values */
+    font-weight: bold; /* Set the text to bold */
+}
+.CodeMirror {
+border: 1px solid #808080; /* Add a 1px solid border with color #ccc */
+border-radius: 5px; /* Add a border radius of 5px */
+padding: 5px; /* Add some padding inside the CodeMirror */
+}
+
 /* Define CSS classes for the button */
 .input-button {
     display: inline-block;
@@ -21,8 +38,3 @@
 .button-class {
     /* Add any additional styles for the button */
 }
-
-</style>
-
-<!-- Use the button with the defined CSS class -->
-<button class="input-button button-class">Submit</button>
