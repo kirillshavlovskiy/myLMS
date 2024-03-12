@@ -1,0 +1,20 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-mylms-dev-113433-authRole",
+      "UnauthRoleArn": "arn:aws:iam::891377302573:role/amplify-mylms-dev-113433-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::891377302573:role/amplify-mylms-dev-113433-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-mylms-dev-113433-deployment",
+      "UnauthRoleName": "amplify-mylms-dev-113433-unauthRole",
+      "StackName": "amplify-mylms-dev-113433",
+      "StackId": "arn:aws:cloudformation:us-east-1:891377302573:stack/amplify-mylms-dev-113433/5bcb1930-e04b-11ee-a5fa-0edf97195147",
+      "AmplifyAppId": "d2q0nbq1l0evws"
+    },
+    "categories": {
+      "function": {
+        "mylmsc0ce1f55": {}
+      }
+    }
+  }
+}
