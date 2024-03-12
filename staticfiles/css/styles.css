@@ -1,17 +1,54 @@
-   <style>
-    .highlighted-line {
-        background-color: rgb(215, 212, 240); /* Set the background color to blue using RGB values */
-        font-weight: bold; /* Set the text to bold */
-    }
-    .highlighted-line-finish {
-        background-color: rgb(217, 217, 217); /* Set the background color to blue using RGB values */
-        font-weight: bold; /* Set the text to bold */
-    }
-    .error-highlighted-line {
-        background-color: rgb(236, 165, 158); /* Set the background color to blue using RGB values */
-        font-weight: bold; /* Set the text to bold */
-    }
-    .CodeMirror {
+<style>
+.menu {
+  list-style-type: none;
+  display: flex;
+  justify-content: space-between;
+}
+
+.menu li {
+  margin-right: 10px;
+}
+
+.menu li:last-child {
+  margin-right: 0;
+}
+
+#console {
+    background-color: #000;
+    color: #fff;
+    padding: 10px;
+    height: 300px;
+    overflow-y: auto;
+}
+#inputLine {
+    color: #0f0;
+}
+.container {
+    display: flex;
+    justify-content: space-between;
+}
+
+.form-container {
+    width: 45%; /* Adjust as needed */
+}
+import '@fontsource/roboto/300.css';
+import '@fontsource/roboto/400.css';
+import '@fontsource/roboto/500.css';
+import '@fontsource/roboto/700.css';
+
+.highlighted-line {
+    background-color: rgb(215, 212, 240); /* Set the background color to blue using RGB values */
+    font-weight: bold; /* Set the text to bold */
+}
+.highlighted-line-finish {
+    background-color: rgb(217, 217, 217); /* Set the background color to blue using RGB values */
+    font-weight: bold; /* Set the text to bold */
+}
+.error-highlighted-line {
+    background-color: rgb(236, 165, 158); /* Set the background color to blue using RGB values */
+    font-weight: bold; /* Set the text to bold */
+}
+.CodeMirror {
     border: 1px solid #808080; /* Add a 1px solid border with color #ccc */
     border-radius: 5px; /* Add a border radius of 5px */
     padding: 5px; /* Add some padding inside the CodeMirror */
@@ -65,17 +102,82 @@
     display: inline-block;
     padding: 0.5em 1em;
     border: none;
-    border-radius: 0.25em;
+    border-radius: 0.5em;
     background-color: var(--input-bg-color);
     color: var(--input-color);
     font-weight: bold;
     cursor: pointer;
 }
 
+/* CSS */
+.button-light {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 6px 14px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
+  border-radius: 6px;
+  border: none;
+
+  background: #6E6D70;
+  box-shadow: 0px 0.5px 1px rgba(0, 0, 0, 0.1), inset 0px 0.5px 0.5px rgba(255, 255, 255, 0.5), 0px 0px 0px 0.5px rgba(0, 0, 0, 0.12);
+  color: #DFDEDF;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+.button-light:focus {
+  box-shadow: inset 0px 0.8px 0px -0.25px rgba(255, 255, 255, 0.2), 0px 0.5px 1px rgba(0, 0, 0, 0.1), 0px 0px 0px 3.5px rgba(58, 108, 217, 0.5);
+  outline: 0;
+}
+
+/* CSS */
+.button-soft {
+  background-color: rgb(32, 36, 48);
+  border: 1px solid transparent;
+  border-radius: .75rem;
+  box-sizing: border-box;
+  color: rgb(203, 204, 198);
+  cursor: pointer;
+  flex: 0 0 auto;
+  font-family: "Inter var",ui-sans-serif,system-ui,-apple-system,system-ui,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1.5rem;
+  padding: .75rem 1.2rem;
+  text-align: center;
+  text-decoration: none #6B7280 solid;
+  text-decoration-thickness: auto;
+  transition-duration: .2s;
+  transition-property: background-color,border-color,color,fill,stroke;
+  transition-timing-function: cubic-bezier(.4, 0, 0.2, 1);
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  width: auto;
+}
+
+.button-soft:hover {
+  background-color: #374151;
+}
+
+.button-soft:focus {
+  box-shadow: none;
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+}
+
+@media (min-width: 768px) {
+  .button-soft {
+    padding: .75rem 1.5rem;
+  }
+}
+
 /* Define CSS variables for the Ayu Mirage theme */
 :root {
-    --input-bg-color: #1E2132;
-    --input-color: #A6ACCD;
+    --input-bg-color: rgb(32, 36, 48);
+    --input-color: rgb(203, 204, 198);
 }
 
 /* Apply the CSS classes to your button */
