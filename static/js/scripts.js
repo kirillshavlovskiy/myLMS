@@ -35,7 +35,7 @@ var startIDEUrl = myElement.getAttribute('data-start-interpreter');
                     method: 'POST',
                     body: taskData,
                     headers: {
-                        'X-CSRFToken': 'ZUP3t44Y65LUc73Xf9Ttev8TnyHF3QzKk4gmydjMKbletcifqGx3RUGNzQoH5WeK'
+                        'X-CSRFToken': getCookie('csrftoken')
                     }
                 })
                 .then(response => {
@@ -64,7 +64,7 @@ var startIDEUrl = myElement.getAttribute('data-start-interpreter');
                                     method: 'POST',
                                     body: AI_formData,
                                     headers: {
-                                        'X-CSRFToken': 'ZUP3t44Y65LUc73Xf9Ttev8TnyHF3QzKk4gmydjMKbletcifqGx3RUGNzQoH5WeK'
+                                        'X-CSRFToken': getCookie('csrftoken')
                                     }
                                 })
                                 .then(response => {
@@ -108,7 +108,7 @@ var startIDEUrl = myElement.getAttribute('data-start-interpreter');
                     method: 'POST',
                     body: AI_formData,
                     headers: {
-                        'X-CSRFToken': 'ZUP3t44Y65LUc73Xf9Ttev8TnyHF3QzKk4gmydjMKbletcifqGx3RUGNzQoH5WeK'
+                        'X-CSRFToken': getCookie('csrftoken')
                     }
                 })
             .then(response => {
@@ -240,7 +240,7 @@ var startIDEUrl = myElement.getAttribute('data-start-interpreter');
                 method: 'POST',
                 body: AI_formData,
                 headers: {
-                    'X-CSRFToken': 'ZUP3t44Y65LUc73Xf9Ttev8TnyHF3QzKk4gmydjMKbletcifqGx3RUGNzQoH5WeK'
+                    'X-CSRFToken': getCookie('csrftoken')
                 }
             })
              .then(response => {
@@ -280,7 +280,7 @@ var startIDEUrl = myElement.getAttribute('data-start-interpreter');
                     method: 'POST',
                     body: AI_formData,
                     headers: {
-                        'X-CSRFToken': 'ZUP3t44Y65LUc73Xf9Ttev8TnyHF3QzKk4gmydjMKbletcifqGx3RUGNzQoH5WeK'
+                        'X-CSRFToken': getCookie('csrftoken')
                     }
                 })
                 .then(response => {
@@ -318,7 +318,7 @@ var startIDEUrl = myElement.getAttribute('data-start-interpreter');
             method: 'POST',
             body: AI_formData,
             headers: {
-                'X-CSRFToken': 'ZUP3t44Y65LUc73Xf9Ttev8TnyHF3QzKk4gmydjMKbletcifqGx3RUGNzQoH5WeK'
+                'X-CSRFToken': getCookie('csrftoken')
             }
         })
         .then(response => {
@@ -386,7 +386,7 @@ var startIDEUrl = myElement.getAttribute('data-start-interpreter');
                 method: 'POST',
                 body: formData,
                 headers: {
-                    'X-CSRFToken': 'ZUP3t44Y65LUc73Xf9Ttev8TnyHF3QzKk4gmydjMKbletcifqGx3RUGNzQoH5WeK'
+                    'X-CSRFToken': getCookie('csrftoken')
                 }
             })
             .then(response => {
@@ -440,7 +440,7 @@ var startIDEUrl = myElement.getAttribute('data-start-interpreter');
                     method: 'POST',
                     body: formData,
                     headers: {
-                        'X-CSRFToken': 'ZUP3t44Y65LUc73Xf9Ttev8TnyHF3QzKk4gmydjMKbletcifqGx3RUGNzQoH5WeK'
+                        'X-CSRFToken': getCookie('csrftoken')
                     }
                     });
                 }
@@ -478,7 +478,7 @@ var startIDEUrl = myElement.getAttribute('data-start-interpreter');
                 method: 'POST',
                 body: formData,
                 headers: {
-                    'X-CSRFToken': 'ZUP3t44Y65LUc73Xf9Ttev8TnyHF3QzKk4gmydjMKbletcifqGx3RUGNzQoH5WeK'
+                    'X-CSRFToken': getCookie('csrftoken')
                 }
             })
             .then(response => {
@@ -560,7 +560,7 @@ var startIDEUrl = myElement.getAttribute('data-start-interpreter');
                     method: 'POST',
                     body: formData,
                     headers: {
-                        'X-CSRFToken': 'ZUP3t44Y65LUc73Xf9Ttev8TnyHF3QzKk4gmydjMKbletcifqGx3RUGNzQoH5WeK'
+                        'X-CSRFToken': getCookie('csrftoken')
                     }
                     });
                     }

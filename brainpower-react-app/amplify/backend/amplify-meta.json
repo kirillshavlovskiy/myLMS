@@ -20,7 +20,7 @@
         "s3TemplateURL": "https://s3.amazonaws.com/amplify-mylms-dev-113433-deployment/amplify-cfn-templates/hosting/template.json",
         "logicalId": "hostingS3AndCloudFront"
       },
-      "lastPushTimeStamp": "2024-03-13T12:24:23.078Z",
+      "lastPushTimeStamp": "2024-03-13T19:21:06.497Z",
       "output": {
         "CloudFrontSecureURL": "https://d1m16030vru2zr.cloudfront.net",
         "S3BucketSecureURL": "https://mylms-20240313151838-hostingbucket-dev.s3.amazonaws.com",
