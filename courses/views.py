@@ -19,7 +19,7 @@ from .openai_service import generate_lesson_content, generate_project_content, a
 client = OpenAI(api_key=os.environ.get('OPENAI_API_KEY'))
 
 #Enable logging
-logging.basicConfig(level=logging.DEBUG)
+#logging.basicConfig(level=logging.DEBUG)
 
 
 def execute_python_code(code, input_values):
