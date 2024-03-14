@@ -15,8 +15,8 @@ from .models import Course, Module, Lesson, Task, Task_thread
 from .openai_service import generate_lesson_content, generate_project_content, assistant_thread_run, message_loop, \
     assistant_preprocess_task
 
-client = OpenAI(api_key=os.environ.get('OPENAI_API_KEY'))
 
+client = OpenAI(api_key=os.environ.get('OPENAI_API_KEY'))
 
 # Enable logging
 # logging.basicConfig(level=logging.DEBUG)
