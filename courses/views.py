@@ -18,14 +18,15 @@ from .openai_service import generate_lesson_content, generate_project_content, a
 
 client = OpenAI(api_key=os.environ.get('OPENAI_API_KEY'))
 
-# Enable logging
-# logging.basicConfig(level=logging.DEBUG)
+#Enable logging
+logging.basicConfig(level=logging.DEBUG)
 
 
 def execute_python_code(code, input_values):
+
     try:
         # Define the execute_python_code function with inputs
-        command = ["python", "-c", code]
+        command = ["python3", "-c", code]
         process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         input_data = '\n'.join(input_values).encode()  # Concatenate input values
         output, error = process.communicate(input=input_data)
