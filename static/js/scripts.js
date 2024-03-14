@@ -370,7 +370,8 @@ var startIDEUrl = myElement.getAttribute('data-start-interpreter');
                 const code = editor.getValue().trim();
                 formData.set('code', code);
             }
-
+            editorElement.classList.add('customClass');
+            editor.setOption('readOnly', true);
             output_form.setValue('');
             // Add the event listener to capture output form changes
             console.log('Code execution started');
@@ -378,7 +379,6 @@ var startIDEUrl = myElement.getAttribute('data-start-interpreter');
             if (AI_formData.task_id !== null) {
             console.log('current task: ', AI_formData.task_id);
             output_form.on('change', handleOutputFormChange);
-
             }
 
             // Initialize inputsProcessed to 0 if not already set
@@ -394,8 +394,8 @@ var startIDEUrl = myElement.getAttribute('data-start-interpreter');
                 }
             })
             .then(response => {
-            editorElement.classList.remove('customClass');
-            editor.setOption('readOnly', false);
+            //editorElement.classList.remove('customClass');
+
 
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
@@ -403,10 +403,8 @@ var startIDEUrl = myElement.getAttribute('data-start-interpreter');
                 return response.json();
             })
             .then(data => {
-            AI_editorElement.classList.add('customClass');
-            editorElement.classList.add('customClass');
-            editor.setOption('readOnly', true);
-            editor_AI.setOption('readOnly', true);
+
+
                 if (data.input_requested) {
                     console.log('Control - move to Input!');
                     const prompt_line = parseInt(data.prompt_message);
@@ -417,13 +415,13 @@ var startIDEUrl = myElement.getAttribute('data-start-interpreter');
                     //Update symbols processed stats
                     form.dataset.symbolsProcessed = data.output;
 
-
                     if (prompt_line) {
                         editor.addLineClass(prompt_line, 'background', 'highlighted-line');
                         previousLine = prompt_line;
 
                     }
                 } else {
+                editor.setOption('readOnly', false);
                 const prompt_line = parseInt(data.prompt_message);
                     if (data.completed) {
                         console.log('Code Execution Finished Successfully on line',editor.lineCount());

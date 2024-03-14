@@ -50,7 +50,7 @@ import '@fontsource/roboto/700.css';
 }
 .CodeMirror {
     border: 1px solid #808080; /* Add a 1px solid border with color #ccc */
-    border-radius: 5px; /* Add a border radius of 5px */
+    border-radius: .75rem; /* Add a border radius of .75rem */
     padding: 5px; /* Add some padding inside the CodeMirror */
 }
 

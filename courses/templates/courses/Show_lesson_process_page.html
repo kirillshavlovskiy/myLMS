@@ -37,7 +37,7 @@
             <form id="code-form">
                 {% csrf_token %}
                 <textarea name="code" id="code" placeholder="Your code here"></textarea>
-                <p><button class = input-button type="submit">Run Code</button></p>
+                <p><button class = button-soft type="submit">Run Code</button></p>
             </form>
             <div class="output-container">
                 <textarea id="code_output" placeholder="Output will appear here"></textarea>
@@ -53,7 +53,7 @@
 
             </form>
             <form id="code-input-ai" novalidate>
-                <p><button class=input-button type="submit">Send Message</button></p>
+                <p><button class=button-soft type="submit">Send Message</button></p>
                 {% csrf_token %}
                 <textarea id="ai-input" name="ai-output" style="height: 20%;" placeholder="AI output will appear here"></textarea>
 
