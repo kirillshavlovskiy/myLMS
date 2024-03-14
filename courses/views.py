@@ -276,8 +276,8 @@ def code_process_ai(request):
         return JsonResponse({'error': 'Form is not valid'})
     except Exception as e:
         # Handle any exception that occurred
-        print('error', str(e))
-        return JsonResponse({'error': str(e)})
+        print('error_0', str(e))
+        return JsonResponse({'error_0': str(e)})
 
 
 def content_process_form(request, content_id):

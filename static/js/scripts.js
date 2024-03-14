@@ -361,13 +361,16 @@ var startIDEUrl = myElement.getAttribute('data-start-interpreter');
             let inputsProcessed = 0
 
             // Check if code is empty
-            if (code.trim() === '') {
+            if (editor.getValue().trim() === '') {
                 console.error('Code is empty');
                 output_form.setValue('Please type your code before pressing "Submit" button.');
                 editorElement.classList.remove('customClass');
                 return;
+            } else {
+                const code = editor.getValue().trim();
+                formData.set('code', code);
             }
-            const code = editor.getValue().trim();
+
             output_form.setValue('');
             // Add the event listener to capture output form changes
             console.log('Code execution started');
@@ -382,7 +385,7 @@ var startIDEUrl = myElement.getAttribute('data-start-interpreter');
             form.dataset.inputsProcessed = form.dataset.inputsProcessed ? parseInt(form.dataset.inputsProcessed) : 0;
             // Initialize symbolsProcessed to '' if not already set
             form.dataset.symbolsProcessed = form.dataset.symbolsProcessed ? form.dataset.symbolsProcessed : '';
-            formData.set('code', code);
+
             fetch(startIDEUrl, {
                 method: 'POST',
                 body: formData,
