@@ -293,7 +293,7 @@ def display_content(request):
 
 
 def create_course_structure(request, course):
-    file_path = os.path.join(settings.BASE_DIR, 'build/static/data/Basics.json')
+    file_path = os.path.join(settings.BASE_DIR, 'static/data/Basics.json')
     created_modules = []
 
     with open(file_path, 'r') as file:
