@@ -359,8 +359,7 @@ var startIDEUrl = myElement.getAttribute('data-start-interpreter');
 
             let symbolsProcessed = 0;
             let inputsProcessed = 0
-            const code = editor.getValue().trim();
-            output_form.setValue('');
+
             // Check if code is empty
             if (code.trim() === '') {
                 console.error('Code is empty');
@@ -368,6 +367,8 @@ var startIDEUrl = myElement.getAttribute('data-start-interpreter');
                 editorElement.classList.remove('customClass');
                 return;
             }
+            const code = editor.getValue().trim();
+            output_form.setValue('');
             // Add the event listener to capture output form changes
             console.log('Code execution started');
              logFormData(AI_formData);

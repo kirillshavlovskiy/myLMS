@@ -86,10 +86,12 @@ def extract_input_prompt(code, line):
 
 @csrf_exempt
 def lesson_process_code(request, lesson_id):
+    print('check if code run started on the server')
     lesson = get_object_or_404(Lesson, pk=lesson_id)
     tasks = Task.objects.filter(lesson_id=lesson.id)
     if request.method == 'POST':
         form = CodeForm(request.POST)
+
         if form.is_valid():
             code = form.cleaned_data['code']
             input_values = request.POST.getlist('input_value')
@@ -237,7 +239,7 @@ def chat(request):
 def code_process_ai(request):
     try:
         if request.method == 'POST':
-            print('code_process:')
+            print('code_process_123:')
             code = request.POST.get('code')
             output = request.POST.get('output')
             thread_id = request.POST.get('thread_id')
