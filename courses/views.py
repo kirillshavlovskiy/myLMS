@@ -301,16 +301,19 @@ def create_course_structure(request, course):
 
     with open(file_path, 'r') as file:
         json_data = json.load(file)
-
+    m = 0
     for module_data in json_data:
         module = Module.objects.create(number=module_data['number'], title=module_data['title'], course=course)
         # Collect the created module
         i = 0
+        m += 1
+        print('module: ', m)
         created_lessons = []
         for lesson_data in module_data['lessons']:
             if i != len(module_data['lessons']):
-                print(len(module_data['lessons']))
+
                 i += 1
+                print('lesson: ', i)
                 lesson = Lesson.objects.create(module=module, number=lesson_data['number'], title=lesson_data['title'])
                 created_tasks = []
                 for task in lesson_data['tasks']:
@@ -343,7 +346,6 @@ def create_course_structure(request, course):
                 print(lesson)
         created_modules.append(created_lessons)
         module.save()
-
         return created_modules
 
 
