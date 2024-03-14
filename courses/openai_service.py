@@ -1,14 +1,11 @@
 import os
 import time
-
 import openai
 from openai import OpenAI
-
 
 # Retrieve the secret value using the `get_secret` function
 
 client = OpenAI(api_key=os.environ.get('OPENAI_API_KEY'))
-
 
 def check_run(client, thread_id, run_id):
     while True:
