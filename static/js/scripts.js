@@ -24,7 +24,7 @@ var startIDEUrl = myElement.getAttribute('data-start-interpreter');
                     event.preventDefault(); // Prevent form submission
                 }
                 const taskTextarea = document.getElementById('task-' + taskId);
-                const code_example = taskTextarea.value
+                const code_example = taskTextarea.value;
                 editor.setValue(code_example);
                 const taskData = new FormData();
                 taskData.append('task_id', taskId);
@@ -46,8 +46,8 @@ var startIDEUrl = myElement.getAttribute('data-start-interpreter');
                         return response.json();
                     })
                         .then(data => {
-                            if (data.thread_id) {
-
+                            if (data.task_description) {
+                                console.log('new thread is initiated')
                                 AI_formData = new FormData();
                                 AI_formData.append('thread_id', data.thread_id);
                                 AI_formData.append('task_id', taskId);
@@ -58,11 +58,13 @@ var startIDEUrl = myElement.getAttribute('data-start-interpreter');
                                 editor_AI.setValue('###___Thread ID:___' + data.thread_id + '\n\n###___Task:___' + data.task_description +'\n\n###___Coding Assistant (auto):___ \n\nHello, my name is Mr.Code. I am your teaching assistant today! Nice to meet you and lets start our practice. I gave you some code examples to start practicing.' + data.ai_response + '\n\nNow you can check the result of sample code execution after pressing the Submit button. \n\nYou can ask me further any questions should you have them about this lesson!');
                                 // Add the event listener to capture output form changes
                                 thread = editor_AI.getValue();
-                                AI_formData.append('thread', thread)
-
+                                const save_form = new FormData();
+                                save_form.append('thread', thread)
+                                save_form.append('task_id', taskId);
+                                save_form.append('code', code_example);
                                  fetch('/courses/thread_save/', {
                                     method: 'POST',
-                                    body: AI_formData,
+                                    body: save_form,
                                     headers: {
                                         'X-CSRFToken': getCookie('csrftoken')
                                     }
@@ -82,7 +84,15 @@ var startIDEUrl = myElement.getAttribute('data-start-interpreter');
                                 });
 
                             } else {  if (data.messages) {
-                                        editor_AI.setValue(data.messages)
+                                AI_formData = new FormData();
+                                AI_formData.append('thread_id', data.thread_id);
+                                AI_formData.append('task_id', taskId);
+                                AI_formData.append('assistant_id', data.assistant_id);
+                                AI_formData.append('code', code_example);
+                                AI_formData.append('output', '');
+
+                                console.log('thread is retrieved')
+                                editor_AI.setValue(data.messages)
                                         } else {
                                 let thread = editor_AI.getValue();
                                 editor_AI.setValue('\n\n' + thread + '\n\n###___Coding Assistant:___\n\nAssistant is not responding, try again in a moment...');
@@ -248,34 +258,25 @@ var startIDEUrl = myElement.getAttribute('data-start-interpreter');
 
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
+                    thread = editor_AI.getValue();
+                    editor_AI.setValue('\n\n###___Thread ID:___' + data.thread_id + '\n\nSystem: Assistant is not responding, please try in a moment.\nInput your question below again:\n');
                 }
                 return response.json();
             })
            .then(data => {
                 if (data.ai_response) {
 
-                    if (!editor_AI.getValue()) {
-
-
-                        // Call the function to log the contents of formData
-                        logFormData(AI_formData);
-                        // Set the content and mark specific lines as editable
-                        editor_AI.setValue('\n\n###___Thread ID:___' + data.thread_id + '\n\n###___Coding Assistant (auto):___' + data.ai_response);
-                    } else {
                         // Call the function to log the contents of formData
                         logFormData(AI_formData);
                         // Set the content and mark specific lines as editable
                         const thread = editor_AI.getValue()
                         editor_AI.setValue(thread + '\n\n###___Thread ID:___' + data.thread_id + '\n\n###___Coding Assistant (auto):___' + data.ai_response);
-                    }
-                } else {
-                    if (!editor_AI.getValue()) {
-                        editor_AI.setValue('\n\n###___Thread ID:___' + data.thread_id + '\n\nSystem: Assistant is not responding, please try in a moment.\nInput your question below again:\n');
-                    }
+                if (AI_formData.task_id) {
+                const save_form = new FormData();
+                save_form.append('thread', thread)
+                save_form.append('task_id', taskId);
+                save_form.append('code', code_example);
 
-                }
-                thread = editor_AI.getValue();
-                AI_formData.set('thread', thread)
                  fetch('/courses/thread_save/', {
                     method: 'POST',
                     body: AI_formData,
@@ -296,6 +297,8 @@ var startIDEUrl = myElement.getAttribute('data-start-interpreter');
 
 
                 });
+                }
+                }
 
                 })
                 .catch(error => {

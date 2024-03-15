@@ -159,10 +159,13 @@ def retrieve_thread(request):
 def save_thread(request):
     if request.method == 'POST':
         task_id = request.POST.get('task_id')
+        print(task_id)
         thread = request.POST.get('thread')
-        code = request.POST.get('code')
+        code = request.POST.get('code_example')
+        print(code)
         task_thread = Task_thread.objects.filter(task_id=task_id).last()
         task_thread.learning_thread += [thread]
+        print('what is saved: ', task_thread.learning_thread)
         task_thread.code = code
         task_thread.save()
         return JsonResponse({'system_message': 'saved'})
@@ -173,8 +176,8 @@ def save_thread(request):
 
 
 def start_thread(request):
+
     try:
-        print('start_thread:')
         if request.method == 'POST':
             task_id = request.POST.get('task_id')
             code = request.POST.get('code')
@@ -183,6 +186,8 @@ def start_thread(request):
             assistant_id = 'asst_Kx2zKp0x0r3fLA6ZFiIGVsPZ'
             print(code)
             if not Task_thread.objects.filter(task=task).exists():
+                print('start_thread:')
+                print("check if Task_thread object does not exist: passed")
                 thread = client.beta.threads.create()
                 task_thread = Task_thread.objects.create(thread_id=thread.id,
                                                          assistant_id=assistant_id,
@@ -195,14 +200,16 @@ def start_thread(request):
                 message = f"{prompt_1} {prompt_2} "
                 print(task_thread)
                 AI_response = message_loop(message, assistant_id, thread_id)
+
                 print("AI_response: ", AI_response)
                 return JsonResponse(
-                    {'ai_response': AI_response, 'thread_id': thread_id, 'task_description': task.description})
+                    {'ai_response': AI_response, 'thread_id': thread_id, 'task_description': task.description, 'assistant_id': assistant_id})
             else:
                 task_thread = Task_thread.objects.filter(task_id=task_id).last()
-                messages = task_thread.learning_thread[-1]
+                length = len(task_thread.learning_thread)
+                messages = task_thread.learning_thread[length-1]
                 print("messages: ", messages)
-                return JsonResponse({'messages': messages, 'thread_id': task_thread.thread_id})
+                return JsonResponse({'messages': messages, 'thread_id': task_thread.thread_id, 'assistant_id': assistant_id})
         else:
             # Handle the case when the form is not valid
             print("Form is not valid")
@@ -210,7 +217,7 @@ def start_thread(request):
     except Exception as e:
         # Handle any exception that occurred
 
-        print('error', str(e))
+        print('error_start thread', str(e))
         return JsonResponse({'error': str(e)})
 
 
@@ -225,7 +232,7 @@ def chat(request):
             assistant_id = 'asst_Kx2zKp0x0r3fLA6ZFiIGVsPZ'
             AI_response = message_loop(message, assistant_id, thread_id)
             print("AI_response: ", AI_response)
-            return JsonResponse({'ai_response': AI_response, 'thread_id': thread_id})
+            return JsonResponse({'ai_response': AI_response, 'thread_id': thread_id, 'assistant_id': assistant_id})
         else:
             # Handle the case when the form is not valid
             print("Form is not valid")
@@ -240,39 +247,43 @@ def chat(request):
 def code_process_ai(request):
     try:
         if request.method == 'POST':
-            print('code_process_123:')
+            print('code_process:')
             code = request.POST.get('code')
+            print(code)
             output = request.POST.get('output')
+            print(output)
             thread_id = request.POST.get('thread_id')
+            print(output)
             task_id = request.POST.get('task_id')
             print(task_id)
-            task = get_object_or_404(Task, id=task_id)
-            print('task id found: ', task_id)
+            assistant_id = 'asst_Kx2zKp0x0r3fLA6ZFiIGVsPZ'
             if thread_id is None:
                 thread = client.beta.threads.create()
                 thread_id = thread.id
             if task_id:
+                task = get_object_or_404(Task, id=task_id)
+                print('task id found: ', task_id)
                 result = assistant_preprocess_task(code, output, thread_id, task.description)
                 if result is not None and len(result) == 3:
                     ai_response, assistant_id, thread_id = result
-                    assistant_id = 'asst_Kx2zKp0x0r3fLA6ZFiIGVsPZ'
                     return JsonResponse(
                         {'ai_response': ai_response, 'thread_id': thread_id, 'assistant_id': assistant_id,
                          'task_description': task.description})
                 else:
                     # Handle the case when the result does not contain the expected values
-                    print("Error: Incorrect number of values returned from assistant_thread_run")
+                    print("Error_0: Incorrect number of values returned from assistant_thread_run")
                     return JsonResponse({'error': 'Incorrect number of values returned'})
             else:
-                result = assistant_thread_run(code, output, thread_id)
+
+                result = assistant_thread_run(code, thread_id, output)
+                print('proceed without task:', result)
                 if result is not None and len(result) == 3:
                     ai_response, assistant_id, thread_id = result
-                    assistant_id = 'asst_Kx2zKp0x0r3fLA6ZFiIGVsPZ'
                     return JsonResponse(
                         {'ai_response': ai_response, 'thread_id': thread_id, 'assistant_id': assistant_id})
                 else:
                     # Handle the case when the result does not contain the expected values
-                    print("Error: Incorrect number of values returned from assistant_thread_run")
+                    print("Error_1: Incorrect number of values returned from assistant_thread_run")
                     return JsonResponse({'error': 'Incorrect number of values returned'})
         return JsonResponse({'error': 'Form is not valid'})
     except Exception as e:

@@ -1,8 +1,8 @@
 import logo from './logo.svg';
 import './App.css';
 import LandingPage from './components/LandingPage';
-import CodeMirror from "@uiw/react-codemirror";
-import Editor from "@monaco-editor/react";
+
+import Monaco_editor from "./components/Monaco_editor";
 
 function App() {
   return (
@@ -10,13 +10,7 @@ function App() {
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <dir>
-         <Editor
-              height="500px"
-              width="700px"
-              language="python"
-              theme="vs-dark"
-              value=""
-            />
+         <Monaco_editor />
         </dir>
         <p>
           Edit <code>src/App.js</code> and save to reload.

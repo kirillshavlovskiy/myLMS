@@ -49,7 +49,6 @@ def message_loop(prompt, assistant_id, thread_id):
             role="user",
             content=prompt_str
         )
-        print("message: ", message)
         run = client.beta.threads.runs.create(
             thread_id=thread_id,
             assistant_id=assistant_id
@@ -80,11 +79,11 @@ def assistant_preprocess_task(code, output, thread_id, task_description):
 
 
 def assistant_thread_run(code, thread_id, output=None):
-    print(thread_id)
+
+    print(code, thread_id)
     try:
         prompt = "In following code please check every line and validate execution response. Advise code corrections if any issue is detected: \
-                 \n" + code + '\nExecution response:\n' + str(output) + '\nShow corrected code in the end, but only if \
-                 corrected code really change the result of code execution. Provide short answer: <<Code is ok!>>'
+                 \n" + code + '\nExecution response:\n' + str(output) + '\nShow improved code even if it shows same result as ' + str(output) + '.'
         assistant_id = 'asst_Kx2zKp0x0r3fLA6ZFiIGVsPZ'
         ai_response = message_loop(prompt, assistant_id, thread_id)
 
